@@ -232,9 +232,17 @@ button:not(:disabled):active{transform:scale(.95)}
 <script>
 /* ===== ตั้งค่า ===== */
 // ใส่ค่า Firebase Realtime Database เพื่อให้ทุกคนเห็นกระทงร่วมกันแบบเรียลไทม์ (ใช้ได้เมื่อโฮสต์บนเว็บของเทศบาล/GitHub Pages)
-const FIREBASE_CONFIG = { apiKey:"", authDomain:"", databaseURL:"", projectId:"" };
+const FIREBASE_CONFIG = {
+  apiKey:"AIzaSyDizNlWp_4JWQqgWmIaot9o4qKn21zDaBI",
+  authDomain:"banbueng-loykrathong.firebaseapp.com",
+  databaseURL:"https://banbueng-loykrathong-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"banbueng-loykrathong",
+  storageBucket:"banbueng-loykrathong.firebasestorage.app",
+  messagingSenderId:"755057502893",
+  appId:"1:755057502893:web:2b56be997d7408a85fb424"
+};
 const DB_PATH = "banbueng2569/krathongs";
-const SHOW_DEMO = true;      // แสดงกระทงตัวอย่างเมื่อยังไม่มีข้อมูล
+const SHOW_DEMO = false;      // แสดงกระทงตัวอย่างเมื่อยังไม่มีข้อมูล
 const LOOP_MS = 120000;      // ~2 นาที ต่อหนึ่งรอบแม่น้ำ
 const MAX_ON_RIVER = 50;
 
@@ -334,7 +342,7 @@ function syncRiver(){
     el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag"><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art(k)}</div>`;
     el.onclick=()=>openK(k);world.appendChild(el);
     nodes.set(k.id,{el,k,lane:(h%997)/997,off:((h>>>11)%1009)/1009,ph:(h%628)/100,x:0,y:0,sz:0});});
-  countUp(all.length);stats();$("badge").textContent=all.length>99?"99+":all.length;
+  countUp(Math.max(fbCount,all.length));stats();{const n=Math.max(fbCount,all.length);$("badge").textContent=n>99?"99+":n}
   $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));
 }
 function tick(t){
@@ -396,7 +404,7 @@ function renderList(){const q=$("search").value.trim().toLowerCase();const arr=a
 $("search").oninput=renderList;$("list").onclick=e=>{const it=e.target.closest(".item");if(it){const k=all.find(k=>k.id===it.dataset.id);closeD();if(nodes.has(k.id)){const n=nodes.get(k.id);n.el.classList.remove("pulse");void n.el.offsetWidth;n.el.classList.add("pulse")}setTimeout(()=>openK(k),450)}};
 
 /* ===== บันทึกข้อมูล ===== */
-let fb=null;
+let fb=null,fbCount=0;
 function refresh(){all.sort((a,b)=>a.ts-b.ts);syncRiver();renderList()}
 function addLocal(k){if(all.some(x=>x.id===k.id))return;all.push(k);refresh()}
 async function initData(){
@@ -404,8 +412,8 @@ async function initData(){
     const ld=u=>new Promise((r,j)=>{const s=document.createElement("script");s.src=u;s.onload=r;s.onerror=j;document.head.appendChild(s)});
     await ld("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");await ld("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
     firebase.initializeApp(FIREBASE_CONFIG);fb=firebase.database().ref(DB_PATH);
-    fb.limitToLast(200).on("child_added",s=>addLocal({...s.val(),id:s.key}));
-    firebase.database().ref(DB_PATH+"_count").on("value",s=>{if(s.val())$("cnt").textContent=Number(s.val()).toLocaleString("th-TH")});
+    fb.limitToLast(MAX_ON_RIVER).on("child_added",s=>addLocal({...s.val(),id:s.key}));
+    firebase.database().ref(DB_PATH+"_count").on("value",s=>{fbCount=Number(s.val())||0;countUp(Math.max(fbCount,all.length));stats()});
     return}catch(e){console.warn("Firebase unavailable, using local mode",e)}}
   all=ls.get("bb69_all",[]);
   if(SHOW_DEMO&&!all.length){const now=Date.now(),demo=[["ครอบครัวบ้านบึง","ขอให้ทุกคนในครอบครัวสุขภาพแข็งแรง"],["น้องมะลิ","ขอให้สอบติดคณะที่หวังไว้"],["ลุงสมชาย","ขอให้ค้าขายดี มีกินมีใช้"],["ทีมงานเทศบาล","ขอให้ชาวบ้านบึงมีความสุขตลอดปี"],["ป้านวล","ขอขมาพระแม่คงคา ขอให้น้ำใสสะอาด"],["Ploy","ขอให้ได้งานใหม่ที่ดี"],["ครูแดง","ขอให้นักเรียนทุกคนเป็นคนดี"],["ตาแก้ว","ขอให้ลูกหลานปลอดภัย"],["เจ","ขอให้รักกันนานๆ"],["ชมรมผู้สูงอายุ","ขอให้ทุกคนอายุยืน"],["ด.ญ.ฟ้า","ขอให้คุณแม่หายป่วยไวๆ"],["หนุ่มหนองชาก","ขอให้ปีหน้าดีกว่าปีนี้"]];
@@ -452,7 +460,7 @@ $("fchips").innerHTML=`<button type="button" class="chip on" data-c="">🌐 ท�
 $("fchips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;fcat=b.dataset.c;document.querySelectorAll("#fchips .chip").forEach(x=>x.classList.toggle("on",x===b));renderList()};
 function stats(){const d0=new Date().setHours(0,0,0,0),cnt={};all.forEach(k=>{const c=classify(k.wish).id;cnt[c]=(cnt[c]||0)+1});
   const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0],c=top&&CATS.find(x=>x.id===top[0]);
-  $("stA").textContent=all.length.toLocaleString("th-TH");$("stT").textContent=all.filter(k=>k.ts>=d0).length.toLocaleString("th-TH");
+  $("stA").textContent=Math.max(fbCount,all.length).toLocaleString("th-TH");$("stT").textContent=all.filter(k=>k.ts>=d0).length.toLocaleString("th-TH");
   $("stC").textContent=c?c.n:"-";$("stCi").textContent=c?c.ic:"✨"}
 let shown=0;function countUp(n){const from=shown,st=performance.now();shown=n;(function f(t){const p=Math.min(1,(t-st)/800);$("cnt").textContent=Math.round(from+(n-from)*(1-Math.pow(1-p,3))).toLocaleString("th-TH");if(p<1)requestAnimationFrame(f)})(st)}
 /* ripple ทุกปุ่ม */
