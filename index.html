@@ -357,7 +357,37 @@ const BASES=[["leaf","ใบตอง","ย่อยสลายใน 2 สั�
 const FLOWERS=[["marigold","ดาวเรือง","🌼"],["rose","กุหลาบ","🌹"],["lotus","บัว","🪷"],["orchid","กล้วยไม้","🌸"],["jasmine","มะลิ","🤍"]];
 const CANDLES=[["yellow","เทียนเหลือง+ธูป 3 ดอก","🕯️"],["white","เทียนขาว+ธูป 3 ดอก","🕯️"],["lotus","เทียนดอกบัว","🪔"]];
 const DECOS=[["none","ไม่ประดับ","—"],["garland","มาลัยมะลิ","📿"],["pearl","สร้อยมุก","⚪"],["gold","ลายทอง","✨"],["globe","บานไม่รู้โรย","💮"],["firefly","แสงหิ่งห้อย","🌟"]];
-const BAD=/(เหี้ย|ควย|เย็ด|สัส|ไอ้สัตว์|อีสัตว์|อีดอก|ส้นตีน|ระยำ|จัญไร|แม่ง|มึง|fuck|shit|bitch|dick)/i;
+/* ===== ระบบกรองคำหยาบ ไทย + อังกฤษ =====
+   - ไทย: ตัดช่องว่าง/จุด/สัญลักษณ์/อักษรล่องหน รวมตัวซ้ำ (ควยยย→ควย) และเทียบแบบตัดวรรณยุกต์ (เหี่ย/เหี้ย/เหีย)
+   - อังกฤษ: แปลง leet (f4ck, sh!t, $hit), ตัวซ้ำ (fuuuck), เว้นวรรคทีละตัว (f u c k), ดอกจัน (f*ck)
+   - มีรายการยกเว้นคำปกติที่คล้ายกัน เช่น หีบ สัดส่วน เหี่ยว กู้ภัย class cocktail */
+const PF=(()=>{
+  const ZW=/[​-‍⁠﻿]/g,TONE=/[็-๎]/g;
+  const base=t=>String(t||"").toLowerCase().replace(ZW,"").replace(/[^฀-๿]/g,"").replace(/(.)\1+/g,"$1");
+  const strip=t=>t.replace(TONE,"");
+  const mk=(arr,f)=>arr.map(w=>[w,f(w)]);
+  const TH_S=mk(["เหี้ย","ควย","เย็ด","หี","แตด","สัส","สัด","ไอ้สัตว์","อีสัตว์","สัตว์นรก","ส้นตีน","ระยำ","จัญไร","ชาติหมา","ไอ้หมา","อีหมา","ลูกหมา","ไอ้เวร","อีเวร","อีดอก","กะหรี่","อีแรด","เงี่ยน","น้ำแตก","ชิบหาย","ฉิบหาย","เฮงซวย","สถุน","ตอแหล","สันดาน","ไอ้ควาย","อีควาย","ไอ้สาด","อีสาด","ปัญญาอ่อน","โสเภณี","ไอ้ฟาย","อีฟาย","เสือก","เสร่อ","ไอ้บ้า","อีบ้า","หน้าตัวเมีย","ไอ้โง่","อีโง่","ดอกทอง","ร่านสวาท","อัปรีย์","จังไร"],w=>strip(base(w)));
+  const TH_WS=["หีบ","สัดส่วน","สัดสวน","เหี่ยว","เหี้ยม","โหดเหี้ยม","กะหรี่ปั๊บ","แกงกะหรี่","ผงกะหรี่","ข้าวกะหรี่","ดอกทองกวาว","ทองดอก"].map(w=>strip(base(w)));
+  const TH_R=mk(["เชี่ย","เชี้ย","แม่ง","แม่ม","ร่าน","ถ่อย","ไอ้ห่า","อีห่า","ห่าราก","มึง","พ่อมึง","แม่มึง"],base);
+  const TH_WR=["กูรู","กูเกิล","กูเกิ้ล","มะกูด","ผักกูด","กูด"].map(base);
+  const EN_SUB=["fuck","fuk","shit","bitch","cunt","whore","slut","bastard","asshole","dickhead","pussy","nigger","nigga","faggot","retard","wanker","twat","motherf","porn","bullshit","piss","jackass","dumbass","horny","blowjob","handjob","dildo"];
+  const EN_EX=["ass","asses","arse","dick","dicks","cock","cocks","cum","tit","tits","titty","fag","fags","fck","fk","fu","wtf","stfu","stupid","idiot","hoe","hoes","boob","boobs","penis","vagina","sex","sexy","nude","nudes","damn","crap","suck","sucks"];
+  const EN_WL=/^(cocktails?|peacocks?|hancock|cockroach(es)?|cockpit|scunthorpe|dickens|dickson|fukuoka|fukushima|shiitake|shitake|class(ic|es)?|pass(ion)?|assist|titan(ic)?|cumin|essex|sussex|middlesex|hello|shell)$/;
+  const rx=(w,ex)=>new RegExp((ex?"^":"")+w.split("").map(c=>"aeiou".includes(c)?`[${c}*]+`:`${c}+`).join("")+(ex?"$":""));
+  const RS=EN_SUB.map(w=>[w,rx(w)]),RE=EN_EX.map(w=>[w,rx(w,1)]);
+  const leet=t=>String(t||"").toLowerCase().replace(ZW,"").replace(/[0134578@$!|]/g,c=>({0:"o",1:"i",3:"e",4:"a",5:"s",7:"t",8:"b","@":"a","$":"s","!":"i","|":"i"}[c]));
+  function check(text){const found=new Set();
+    let r=base(text);TH_WR.forEach(w=>r=r.split(w).join("□"));
+    TH_R.forEach(([o,n])=>{if(r.includes(n))found.add(o)});if(/กู(?![่-๋])/.test(r))found.add("กู");
+    let t=strip(base(text));TH_WS.forEach(w=>t=t.split(w).join("□"));TH_S.forEach(([o,n])=>{if(t.includes(n))found.add(o)});
+    const tk=leet(text).split(/[^a-z*]+/).filter(Boolean),toks=[];let run="";
+    tk.forEach(x=>{if(x.replace(/\*/g,"").length<=1){run+=x}else{if(run.length>1)toks.push(run);run="";toks.push(x)}});if(run.length>1)toks.push(run);
+    toks.forEach(x=>{if(EN_WL.test(x))return;RS.forEach(([o,re])=>{if(re.test(x))found.add(o)});RE.forEach(([o,re])=>{if(re.test(x))found.add(o)})});
+    const words=[...found];return{bad:words.length>0,words,masked:words.map(w=>w[0]+"*".repeat(Math.max(1,[...w].length-1)))}}
+  return{check}})();
+const BAD={test:s=>PF.check(s).bad};
+const badMsg=s=>{const r=PF.check(s);return r.bad?`🤖 ระบบกรองพบคำไม่สุภาพ (${r.masked.join(", ")}) กรุณาแก้ไข 🙏`:""};
+function cleanK(k){if(PF.check(k.name).bad)k.name="ผู้ร่วมลอยกระทง";if(PF.check(k.wish).bad)k.wish="🙏 ข้อความนี้ถูกซ่อนโดยระบบกรองคำไม่สุภาพ";return k}
 
 /* ===== SVG กระทงประกอบเอง ===== */
 function flower(t,x,y,s){
@@ -512,7 +542,7 @@ $("search").oninput=renderList;$("list").onclick=e=>{const it=e.target.closest("
 /* ===== บันทึกข้อมูล ===== */
 let fb=null,fbCount=0;
 function refresh(){all.sort((a,b)=>a.ts-b.ts);syncRiver();renderList()}
-function addLocal(k){if(all.some(x=>x.id===k.id))return;all.push(k);refresh()}
+function addLocal(k){if(all.some(x=>x.id===k.id))return;all.push(cleanK(k));refresh()}
 async function initData(){
   if(FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.databaseURL){try{
     const ld=u=>new Promise((r,j)=>{const s=document.createElement("script");s.src=u;s.onload=r;s.onerror=j;document.head.appendChild(s)});
@@ -521,14 +551,14 @@ async function initData(){
     fb.limitToLast(MAX_ON_RIVER).on("child_added",s=>addLocal({...s.val(),id:s.key}));
     firebase.database().ref(DB_PATH+"_count").on("value",s=>{fbCount=Number(s.val())||0;countUp(Math.max(fbCount,all.length));stats()});
     return}catch(e){console.warn("Firebase unavailable, using local mode",e)}}
-  all=ls.get("bb69_all",[]);
+  all=ls.get("bb69_all",[]).map(cleanK);
   if(SHOW_DEMO&&!all.length){const now=Date.now(),demo=[["ครอบครัวบ้านบึง","ขอให้ทุกคนในครอบครัวสุขภาพแข็งแรง"],["น้องมะลิ","ขอให้สอบติดคณะที่หวังไว้"],["ลุงสมชาย","ขอให้ค้าขายดี มีกินมีใช้"],["ทีมงานเทศบาล","ขอให้ชาวบ้านบึงมีความสุขตลอดปี"],["ป้านวล","ขอขมาพระแม่คงคา ขอให้น้ำใสสะอาด"],["Ploy","ขอให้ได้งานใหม่ที่ดี"],["ครูแดง","ขอให้นักเรียนทุกคนเป็นคนดี"],["ตาแก้ว","ขอให้ลูกหลานปลอดภัย"],["เจ","ขอให้รักกันนานๆ"],["ชมรมผู้สูงอายุ","ขอให้ทุกคนอายุยืน"],["ด.ญ.ฟ้า","ขอให้คุณแม่หายป่วยไวๆ"],["หนุ่มหนองชาก","ขอให้ปีหน้าดีกว่าปีนี้"]];
     all=demo.map(([n,w],i)=>i%2?{id:"d"+i,name:n,wish:w,type:"preset",preset:PRESETS[i%9][0],ts:now-(12-i)*600000}:{id:"d"+i,name:n,wish:w,type:"custom",parts:{base:BASES[i%5][0],flower:FLOWERS[(i+2)%5][0],candle:CANDLES[i%3][0],deco:DECOS[(i+1)%6][0]},ts:now-(12-i)*600000});}
   refresh();
 }
 $("form").onsubmit=async e=>{e.preventDefault();const name=$("name").value.trim(),wish=$("wish").value.trim(),er=$("err");
   if(!name)return er.textContent="กรุณาใส่ชื่อ";if(!wish)return er.textContent="กรุณาใส่คำอธิษฐาน";
-  if(BAD.test(name+" "+wish))return er.textContent="กรุณาใช้ถ้อยคำที่สุภาพ 🙏";if(!$("pdpa").checked)return er.textContent="กรุณาติ๊กยินยอมตาม PDPA";
+  if(BAD.test(name+" "+wish))return er.textContent=badMsg(name+" "+wish);if(!$("pdpa").checked)return er.textContent="กรุณาติ๊กยินยอมตาม PDPA";
   er.textContent="";$("submit").disabled=$("nextBtn").disabled=true;
   ls.set("bb69_name",name);const k={name,wish,type:sel.type,ts:Date.now()};if(sel.type==="preset")k.preset=sel.preset;else k.parts={...sel.parts};if(sel.photo)k.photo=sel.photo;
   try{if(fb){const r=fb.push();k.id=r.key;mine.add(k.id);ls.set("bb69_mine",[...mine]);await r.set({name,wish,type:k.type,ts:k.ts,...(k.preset?{preset:k.preset}:{parts:k.parts}),...(k.photo?{photo:k.photo}:{})});firebase.database().ref(DB_PATH+"_count").transaction(c=>(c||0)+1)}
@@ -556,12 +586,13 @@ function go(n){if(n===step)return;const back=n<step;step=n;
   $("nextBtn").innerHTML=n<3?"ถัดไป ›":"🪷 ลอยกระทงเลย";$("form").scrollTop=0;
   if(n===3)summary();if(n===2&&matchMedia("(min-width:641px)").matches&&!$("name").value)setTimeout(()=>$("name").focus(),350)}
 function check2(){const n=$("name").value.trim(),w=$("wish").value.trim();let m="";
-  if(!n)m="กรุณาใส่ชื่อหรือนามแฝง";else if(!w)m="กรุณาใส่คำอธิษฐาน หรือแตะหัวข้อให้ผู้ช่วยแต่ง";else if(BAD.test(n+" "+w))m="กรุณาใช้ถ้อยคำที่สุภาพ 🙏";
+  if(!n)m="กรุณาใส่ชื่อหรือนามแฝง";else if(!w)m="กรุณาใส่คำอธิษฐาน หรือแตะหัวข้อให้ผู้ช่วยแต่ง";else if(BAD.test(n+" "+w))m=badMsg(n+" "+w);
   $("err2").textContent=m;if(m){const f=!n?$("name"):$("wish");f.focus();f.animate([{transform:"translateX(0)"},{transform:"translateX(-6px)"},{transform:"translateX(6px)"},{transform:"translateX(0)"}],{duration:300})}return !m}
 $("nextBtn").onclick=()=>{if(step===1)go(2);else if(step===2){if(check2())go(3)}else $("form").requestSubmit()};
 $("backBtn").onclick=()=>go(step-1);
 $("steps").onclick=e=>{const b=e.target.closest(".st");if(!b)return;const k=+b.dataset.s;if(k<step)go(k);else if(k===2)go(2);else if(k===3&&check2())go(3)};
 $("sumInfo").onclick=e=>{const b=e.target.closest("[data-go]");if(b)go(+b.dataset.go)};
+$("name").addEventListener("input",()=>$("wish").oninput());
 $("name").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("wish").focus()}});
 $("backBtn").hidden=true;$("progBar").style.width="33.4%";
 
@@ -584,7 +615,7 @@ $("chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const c=CA
 function suggest(){const w=$("wish").value.trim(),c=classify(w);if(!w){$("sug").classList.remove("show");return}
   const pn=PRESETS.find(p=>p[0]===c.p)[1];$("sugT").innerHTML=`🔮 วิเคราะห์: <b>${c.ic} ${c.n}</b> · แนะนำกระทง “${pn}”`;$("sugBtn").dataset.p=c.p;$("sug").classList.add("show")}
 $("wish").oninput=()=>{$("wc").textContent=$("wish").value.length+"/200";clearTimeout(suggest._t);suggest._t=setTimeout(suggest,250);
-  if(BAD.test($("wish").value))$("err2").textContent="🤖 ระบบตรวจพบถ้อยคำไม่สุภาพ กรุณาแก้ไข";else if($("err2").textContent.startsWith("🤖"))$("err2").textContent=""};
+  if(BAD.test($("name").value+" "+$("wish").value))$("err2").textContent=badMsg($("name").value+" "+$("wish").value);else if($("err2").textContent.startsWith("🤖"))$("err2").textContent=""};
 $("sugBtn").onclick=()=>{document.querySelector('.tabs button[data-t=preset]').click();const b=document.querySelector(`.preset[data-id=${$("sugBtn").dataset.p}]`);b.click();b.scrollIntoView({block:"nearest",behavior:"smooth"});toast("✨ เลือกกระทงที่เหมาะกับคำอธิษฐานให้แล้ว")};
 $("name").value=ls.get("bb69_name","");
 $("fchips").innerHTML=`<button type="button" class="chip on" data-c="">🌐 ทั้งหมด</button>`+CATS.map(c=>`<button type="button" class="chip" data-c="${c.id}">${c.ic} ${c.n}</button>`).join("");
