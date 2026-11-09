@@ -133,6 +133,36 @@ input:focus,textarea:focus{outline:none;border-color:var(--gold)}
 footer{text-align:center;color:var(--mut);font-size:13px;padding:0 16px 30px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:#1d2a60;border:1px solid var(--gold);padding:10px 18px;border-radius:99px;z-index:60;transition:.3s}
 .toast.show{transform:translateX(-50%)}
+
+/* ===== ไอคอน + เอฟเฟกต์ทุกฟังก์ชัน ===== */
+button{transition:transform .15s,filter .15s,box-shadow .2s}
+button:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12)}
+button:not(:disabled):active{transform:scale(.95)}
+.rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(4);opacity:0}}
+.mbox{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6) translateY(30px);opacity:0}}
+.item{animation:fin .4s ease both}
+@keyframes fin{from{opacity:0;transform:translateX(20px)}}
+.form label{display:flex;gap:6px;align-items:center}
+.ai{margin-top:4px;border:1px solid rgba(160,120,255,.45);background:linear-gradient(135deg,rgba(90,60,200,.25),rgba(20,120,200,.15));border-radius:14px;padding:12px}
+.ai h4{margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:6px;color:#d9ccff}
+.ai h4 .dot{width:8px;height:8px;border-radius:50%;background:#7cf;box-shadow:0 0 8px #7cf;animation:hb2 1s infinite}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid #5a6bb0;background:#0b1430;color:#fff;border-radius:99px;padding:5px 11px;font-size:13px;position:relative;overflow:hidden}
+.chip.on{background:#3b2a7a;border-color:#a78bfa}
+.sug{margin-top:8px;font-size:13px;color:#cfe;display:none;align-items:center;gap:8px;flex-wrap:wrap;animation:fin .3s}
+.sug.show{display:flex}
+.sug button{border:0;border-radius:99px;padding:4px 12px;background:linear-gradient(#a78bfa,#6d28d9);color:#fff;font-weight:600;font-size:12.5px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.stat{background:#0b1430;border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.stat i{font-style:normal;font-size:20px;display:block;animation:hb2 2s infinite}
+.stat b{display:block;color:var(--gold);font-size:18px}
+.stat small{color:var(--mut);font-size:11.5px}
+.cat{font-size:11px;padding:1px 7px;border-radius:99px;background:#24357a;margin-left:6px;vertical-align:middle}
+.bless{font-size:16px;line-height:1.7;margin:8px 0;padding:12px;border-radius:12px;background:rgba(255,211,107,.1);border:1px dashed rgba(255,211,107,.5)}
+.sndBtn{position:absolute;top:3%;right:3%;z-index:7;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(12,20,50,.6);color:#fff;font-size:18px}
+.searchWrap{position:relative}
 </style>
 </head>
 <body>
@@ -148,6 +178,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:0 16px 30px}
   <div id="river"><div id="world"></div></div>
   <div class="hint" id="hint">👆 แตะกระทงเพื่ออ่านคำอธิษฐาน · ✨ กด “สร้างกระทง” เพื่อลอยของคุณ</div>
   <canvas id="fx"></canvas>
+  <button class="sndBtn" id="snd" title="เปิด/ปิดเสียง">🔇</button>
   <div class="sceneBtns">
     <button class="btn ghost" id="findBtn" disabled>🔍 หากระทงของฉัน</button>
     <button class="btn ghost" data-open="wishes" style="position:relative">📜 คำอธิษฐาน <span class="badge" id="badge">0</span></button>
@@ -159,7 +190,7 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:0 16px 30px}
 <main>
   <section class="card drawer" id="make"><button class="x" data-close aria-label="ปิด">×</button>
     <h2>✨ สร้างกระทงของคุณ</h2>
-    <div class="tabs"><button data-t="preset" class="on">แบบสำเร็จ</button><button data-t="custom">ประกอบเอง</button></div>
+    <div class="tabs"><button data-t="preset" class="on">🎁 แบบสำเร็จ</button><button data-t="custom">🛠️ ประกอบเอง</button></div>
     <div class="builder">
       <div class="preview"><div class="pv" id="pv"></div></div>
       <div>
@@ -168,11 +199,13 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:0 16px 30px}
       </div>
     </div>
     <form class="form" id="form" autocomplete="off">
-      <div><label for="name">ชื่อ / นามแฝง</label><input type="text" id="name" maxlength="40" placeholder="เช่น ครอบครัวสุขใจ"></div>
-      <div><label for="wish">คำอธิษฐาน</label><textarea id="wish" maxlength="200" placeholder="ขอให้ครอบครัวมีความสุข สุขภาพแข็งแรง..."></textarea>
+      <div><label for="name">👤 ชื่อ / นามแฝง</label><input type="text" id="name" maxlength="40" placeholder="เช่น ครอบครัวสุขใจ"></div>
+      <div><label for="wish">🙏 คำอธิษฐาน</label><textarea id="wish" maxlength="200" placeholder="ขอให้ครอบครัวมีความสุข สุขภาพแข็งแรง..."></textarea>
         <div class="row"><span>ไม่เกิน 200 ตัวอักษร</span><span id="wc">0/200</span></div></div>
-      <div><label>รูปภาพบนกระทง (ไม่บังคับ)</label><div class="photoRow"><img id="phPrev" hidden alt=""><button type="button" class="photoBtn" id="phBtn">📷 เลือกรูป</button><button type="button" class="photoBtn" id="phDel" hidden>ลบรูป</button><input type="file" id="phFile" accept="image/*" hidden></div></div>
+      <div><label>🖼️ รูปภาพบนกระทง (ไม่บังคับ)</label><div class="photoRow"><img id="phPrev" hidden alt=""><button type="button" class="photoBtn" id="phBtn">📷 เลือกรูป</button><button type="button" class="photoBtn" id="phDel" hidden>ลบรูป</button><input type="file" id="phFile" accept="image/*" hidden></div></div>
       <label class="pdpa"><input type="checkbox" id="pdpa"> <span>ข้าพเจ้ายินยอมให้เทศบาลตำบลบ้านบึงเก็บและแสดงชื่อ คำอธิษฐาน และรูปภาพ (ถ้ามี) บนเว็บไซต์นี้ เพื่อใช้ในกิจกรรมลอยกระทงออนไลน์ ประจำปี 2569 ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</span></label>
+      <div class="ai"><h4><span class="dot"></span>🤖 ผู้ช่วยอัจฉริยะ · เลือกหัวข้อให้ช่วยแต่งคำอธิษฐาน</h4><div class="chips" id="chips"></div>
+        <div class="sug" id="sug"><span id="sugT"></span><button type="button" id="sugBtn">✨ ใช้กระทงแนะนำ</button></div></div>
       <div class="err" id="err"></div>
       <button class="btn gold" type="submit" id="submit">🪷 ลอยกระทง</button>
     </form>
@@ -180,13 +213,15 @@ footer{text-align:center;color:var(--mut);font-size:13px;padding:0 16px 30px}
 
   <section class="card drawer" id="wishes"><button class="x" data-close aria-label="ปิด">×</button>
     <h2>📜 คำอธิษฐานล่าสุด</h2>
-    <input type="text" id="search" placeholder="🔍 ค้นหาตามชื่อ...">
+    <div class="stats"><div class="stat"><i>🪷</i><b id="stA">0</b><small>กระทงทั้งหมด</small></div><div class="stat"><i>📅</i><b id="stT">0</b><small>ลอยวันนี้</small></div><div class="stat"><i id="stCi">✨</i><b id="stC" style="font-size:14px">-</b><small>คำอธิษฐานยอดนิยม</small></div></div>
+    <input type="text" id="search" placeholder="🔍 ค้นหาชื่อหรือคำอธิษฐาน...">
+    <div class="chips" id="fchips" style="margin-top:8px"></div>
     <div class="list" id="list" style="margin-top:10px"></div>
   </section>
 </main>
 <footer>© 2569 เทศบาลตำบลบ้านบึง อำเภอบ้านบึง จังหวัดชลบุรี · กระทงทุกแบบเป็นวัสดุธรรมชาติ ย่อยสลายได้ 🌿</footer>
 
-<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mk" id="mk"></div><h3 id="mn"></h3><q id="mw"></q><time id="mt" style="color:var(--mut);font-size:13px"></time></div></div>
+<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mk" id="mk"></div><h3 id="mn"></h3><q id="mw"></q><div class="bless" id="mb" hidden></div><time id="mt" style="color:var(--mut);font-size:13px"></time></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -294,7 +329,7 @@ function syncRiver(){
     el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag"><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art(k)}</div>`;
     el.onclick=()=>openK(k);world.appendChild(el);
     nodes.set(k.id,{el,k,lane:(h%997)/997,off:((h>>>11)%1009)/1009,ph:(h%628)/100,x:0,y:0,sz:0});});
-  $("cnt").textContent=all.length.toLocaleString("th-TH");$("badge").textContent=all.length>99?"99+":all.length;
+  countUp(all.length);stats();$("badge").textContent=all.length>99?"99+":all.length;
   $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));
 }
 function tick(t){
@@ -323,7 +358,7 @@ function launch(x,ty){const y=hzY(x);rockets.push({x,y,ty:Math.min(ty,y-80),vx:(
 function firework(x,y,n=70,hue=Math.random()*360){const ring=Math.random()<.35;for(let i=0;i<n;i++){const a=ring?i/n*6.2832:Math.random()*6.28,v=ring?3.6:1.5+Math.random()*3.5;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:`hsl(${(hue+Math.random()*50)|0},100%,65%)`})}}
 function drawFx(){const c=$("fx"),g=c.getContext("2d"),T=performance.now();g.clearRect(0,0,c.clientWidth,c.clientHeight);g.globalCompositeOperation="lighter";
   glints.forEach(q=>{const a=Math.sin(T/500+q.p);if(a<.3)return;g.globalAlpha=a*.9;g.fillStyle="#fff3c4";const G=P.gl,x=M.ox+(G[0]+q.u*(G[1]-G[0]))*M.s,y=M.oy+(G[2]+q.v*(G[3]-G[2]))*M.s;g.beginPath();g.arc(x,y,q.r,0,7);g.fill();g.fillRect(x-q.r*3,y-.4,q.r*6,.8)});
-  rockets=rockets.filter(r=>{r.y-=6;r.x+=r.vx;g.globalAlpha=1;g.fillStyle=`hsl(${r.h},100%,80%)`;g.beginPath();g.arc(r.x,r.y,2.4,0,7);g.fill();for(let i=1;i<6;i++){g.globalAlpha=.5-i*.08;g.beginPath();g.arc(r.x-r.vx*i*2,r.y+i*6,2-i*.3,0,7);g.fill()}if(r.y<=r.ty){firework(r.x,r.y,80+Math.random()*40|0,r.h);return false}return true});
+  rockets=rockets.filter(r=>{r.y-=6;r.x+=r.vx;g.globalAlpha=1;g.fillStyle=`hsl(${r.h},100%,80%)`;g.beginPath();g.arc(r.x,r.y,2.4,0,7);g.fill();for(let i=1;i<6;i++){g.globalAlpha=.5-i*.08;g.beginPath();g.arc(r.x-r.vx*i*2,r.y+i*6,2-i*.3,0,7);g.fill()}if(r.y<=r.ty){firework(r.x,r.y,80+Math.random()*40|0,r.h);if(Math.random()<.5)sfx("boom");return false}return true});
   parts=parts.filter(p=>(p.l-=.012)>0);parts.forEach(p=>{const ox=p.x,oy=p.y;p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.vx*=.982;p.vy*=.982;g.globalAlpha=p.l;g.strokeStyle=g.fillStyle=p.c;g.lineWidth=2.2;g.beginPath();g.moveTo(ox-p.vx*2,oy-p.vy*2);g.lineTo(p.x,p.y);g.stroke();if(p.l<.5&&Math.random()<.3){g.beginPath();g.arc(p.x,p.y,1.2,0,7);g.fill()}});g.globalAlpha=1;g.globalCompositeOperation="source-over"}
 function randomShow(){const s=$("scene");launch(s.clientWidth*(.06+Math.random()*.88),s.clientHeight*(.06+Math.random()*.2))}
 setInterval(()=>{if(!document.hidden&&Math.random()<.8){randomShow();if(Math.random()<.35)setTimeout(randomShow,300)}},1700);
@@ -347,10 +382,12 @@ addEventListener("keydown",e=>{if(e.key==="Escape")closeD()});
 $("goBtn").onclick=()=>openD("make");
 
 /* ===== modal / list ===== */
-function openK(k){$("mk").innerHTML=art(k);$("mn").textContent=(mine.has(k.id)?"⭐ ":"")+k.name;$("mw").textContent=k.wish||"—";$("mt").textContent=fmt(k.ts);$("modal").classList.add("show")}
+function openK(k,bl){$("mk").innerHTML=art(k);$("mn").textContent=(mine.has(k.id)?"⭐ ":"")+k.name;$("mw").textContent=k.wish||"—";$("mt").textContent="🕯️ "+fmt(k.ts);
+  const c=classify(k.wish);$("mb").hidden=!(bl||mine.has(k.id));$("mb").innerHTML=`🌕 <b>พรจากพระแม่คงคา</b> (${c.ic} ${c.n})<br>${esc(blessing(k))}`;
+  $("modal").classList.add("show");sfx("chime");setTimeout(()=>sparkle($("mk")),200)}
 $("mx").onclick=()=>$("modal").classList.remove("show");$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("show")};
-function renderList(){const q=$("search").value.trim().toLowerCase();const arr=all.slice().reverse().filter(k=>!q||k.name.toLowerCase().includes(q)).slice(0,100);
-  $("list").innerHTML=arr.length?arr.map(k=>`<div class="item${mine.has(k.id)?" mine":""}" data-id="${k.id}"><div class="th">${art(k)}</div><div><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><p>${esc(k.wish)}</p><time>${fmt(k.ts)}</time></div></div>`).join(""):`<p style="color:var(--mut)">ไม่พบรายการ</p>`}
+function renderList(){const q=$("search").value.trim().toLowerCase();const arr=all.slice().reverse().filter(k=>(!q||k.name.toLowerCase().includes(q)||String(k.wish).toLowerCase().includes(q))&&(!fcat||classify(k.wish).id===fcat)).slice(0,100);
+  $("list").innerHTML=arr.length?arr.map(k=>`<div class="item${mine.has(k.id)?" mine":""}" data-id="${k.id}"><div class="th">${art(k)}</div><div><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}<span class="cat">${classify(k.wish).ic} ${classify(k.wish).n}</span></b><p>${esc(k.wish)}</p><time>${fmt(k.ts)}</time></div></div>`).join(""):`<p style="color:var(--mut)">ไม่พบรายการ</p>`}
 $("search").oninput=renderList;$("list").onclick=e=>{const it=e.target.closest(".item");if(it){const k=all.find(k=>k.id===it.dataset.id);closeD();if(nodes.has(k.id)){const n=nodes.get(k.id);n.el.classList.remove("pulse");void n.el.offsetWidth;n.el.classList.add("pulse")}setTimeout(()=>openK(k),450)}};
 
 /* ===== บันทึกข้อมูล ===== */
@@ -374,15 +411,54 @@ $("form").onsubmit=async e=>{e.preventDefault();const name=$("name").value.trim(
   if(!name)return er.textContent="กรุณาใส่ชื่อ";if(!wish)return er.textContent="กรุณาใส่คำอธิษฐาน";
   if(BAD.test(name+" "+wish))return er.textContent="กรุณาใช้ถ้อยคำที่สุภาพ 🙏";if(!$("pdpa").checked)return er.textContent="กรุณาติ๊กยินยอมตาม PDPA";
   er.textContent="";$("submit").disabled=true;
-  const k={name,wish,type:sel.type,ts:Date.now()};if(sel.type==="preset")k.preset=sel.preset;else k.parts={...sel.parts};if(sel.photo)k.photo=sel.photo;
+  ls.set("bb69_name",name);const k={name,wish,type:sel.type,ts:Date.now()};if(sel.type==="preset")k.preset=sel.preset;else k.parts={...sel.parts};if(sel.photo)k.photo=sel.photo;
   try{if(fb){const r=fb.push();k.id=r.key;mine.add(k.id);ls.set("bb69_mine",[...mine]);await r.set({name,wish,type:k.type,ts:k.ts,...(k.preset?{preset:k.preset}:{parts:k.parts}),...(k.photo?{photo:k.photo}:{})});firebase.database().ref(DB_PATH+"_count").transaction(c=>(c||0)+1)}
     else{k.id="u"+k.ts.toString(36)+Math.random().toString(36).slice(2,6);mine.add(k.id);ls.set("bb69_mine",[...mine]);addLocal(k);ls.set("bb69_all",all.slice(-120))}
     if(fb)addLocal(k);
     $("wish").value="";$("wc").textContent="0/200";$("phDel").click();toast("🪷 ลอยกระทงเรียบร้อย ขอให้สมปรารถนา");
     for(let i=0;i<4;i++)setTimeout(randomShow,i*350);for(let i=0;i<4;i++)setTimeout(lantern,i*400);
-    closeD();setTimeout(()=>$("findBtn").click(),500);
+    closeD();setTimeout(()=>$("findBtn").click(),500);sfx("splash");setTimeout(()=>openK(k,true),3200);
   }catch(x){er.textContent="บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง"}finally{$("submit").disabled=false}};
 
+
+/* ===== ระบบอัจฉริยะ: จัดหมวดคำอธิษฐาน แนะนำกระทง แต่งคำอธิษฐาน อวยพร ===== */
+const CATS=[
+ {id:"health",n:"สุขภาพ",ic:"💪",kw:/สุขภาพ|หายป่วย|ป่วย|แข็งแรง|อายุยืน|โรค|หาย/,p:"k5",t:["ขอให้ครอบครัวสุขภาพแข็งแรง ปราศจากโรคภัยไข้เจ็บ","ขอให้คุณพ่อคุณแม่อายุยืนยาว แข็งแรงอยู่กับลูกหลานไปนานๆ","ขอให้หายป่วยไวๆ กลับมาแข็งแรงเหมือนเดิม"],b:"ขอให้ร่างกายแข็งแรง จิตใจแจ่มใส ห่างไกลโรคภัยตลอดปี"},
+ {id:"family",n:"ครอบครัว",ic:"👨‍👩‍👧",kw:/ครอบครัว|พ่อ|แม่|ลูก|หลาน|ปู่|ย่า|ตา|ยาย|พี่|น้อง/,p:"k8",t:["ขอให้ครอบครัวอบอุ่น รักใคร่กลมเกลียวกัน","ขอให้ลูกหลานเป็นคนดี ปลอดภัยทุกการเดินทาง","ขอให้บ้านเรามีแต่ความสุข เสียงหัวเราะทุกวัน"],b:"ขอให้ครอบครัวอบอุ่น พร้อมหน้าพร้อมตา มีความสุขทุกวัน"},
+ {id:"work",n:"การงาน·โชคลาภ",ic:"💰",kw:/งาน|ค้าขาย|รวย|เงิน|โชค|ลาภ|ธุรกิจ|เลื่อน|ขาย|หนี้/,p:"k3",t:["ขอให้ค้าขายร่ำรวย เงินทองไหลมาเทมา","ขอให้หน้าที่การงานก้าวหน้า ได้เลื่อนตำแหน่ง","ขอให้มีโชคลาภ ปลดหนี้ได้หมดในปีนี้"],b:"ขอให้การงานรุ่งเรือง โชคลาภไหลมาเทมา เงินทองเต็มกระเป๋า"},
+ {id:"study",n:"การเรียน",ic:"📚",kw:/สอบ|เรียน|เกรด|มหาลัย|มหาวิทยาลัย|ทุน|ปริญญา/,p:"k2",t:["ขอให้สอบติดคณะที่หวังไว้","ขอให้เรียนเก่ง เกรดดี จบการศึกษาตามที่ตั้งใจ","ขอให้ได้ทุนเรียนต่อตามฝัน"],b:"ขอให้สติปัญญาเฉียบแหลม สอบผ่านฉลุย สำเร็จการศึกษาดังหวัง"},
+ {id:"love",n:"ความรัก",ic:"💕",kw:/รัก|คู่|แฟน|แต่งงาน|หัวใจ|เนื้อคู่/,p:"k7",t:["ขอให้รักกันนานๆ ไม่มีวันจืดจาง","ขอให้พบเนื้อคู่ที่ดี จริงใจ","ขอให้ความรักของเราสดใสเหมือนแสงจันทร์คืนนี้"],b:"ขอให้ความรักหวานชื่น มั่นคง และอบอุ่นตลอดไป"},
+ {id:"sorry",n:"ขอขมา",ic:"🙏",kw:/ขอขมา|คงคา|แม่น้ำ|ขออภัย|ล่วงเกิน/,p:"k4",t:["ขอขมาพระแม่คงคาที่ได้ใช้น้ำและทำให้น้ำสกปรก","ขอลอยความทุกข์และสิ่งไม่ดีให้ไปกับสายน้ำ","ขอให้แม่น้ำลำคลองใสสะอาดตลอดไป"],b:"พระแม่คงคารับคำขอขมาแล้ว ขอให้ความทุกข์ลอยไปกับสายน้ำ"},
+ {id:"home",n:"บ้านบึง·ชุมชน",ic:"🏡",kw:/บ้านบึง|ชุมชน|ประเทศ|บ้านเมือง|ชาวบ้าน|เทศบาล|สังคม/,p:"k9",t:["ขอให้ชาวบ้านบึงมีความสุข อยู่ดีกินดีทุกครัวเรือน","ขอให้บ้านบึงน่าอยู่ ปลอดภัย และร่มเย็น","ขอให้ประเทศไทยสงบสุข ร่มเย็นเป็นสุข"],b:"ขอให้บ้านบึงร่มเย็นเป็นสุข ชุมชนเข้มแข็ง ทุกคนอยู่ดีมีสุข"},
+ {id:"general",n:"ทั่วไป",ic:"✨",kw:/$^/,p:"k6",t:["ขอให้ปีนี้ดีกว่าปีที่ผ่านมา","ขอให้ทุกสิ่งที่ตั้งใจสำเร็จดังหวัง","ขอให้มีความสุขกายสบายใจทุกวัน"],b:"ขอให้สมปรารถนาทุกประการ พบแต่สิ่งดีงามตลอดปี"}];
+function classify(w){w=String(w||"");let best=CATS[7],sc=0;CATS.forEach(c=>{const m=w.match(new RegExp(c.kw.source,"g"));if(m&&m.length>sc){sc=m.length;best=c}});return best}
+function blessing(k){return `คุณ${k.name} — ${classify(k.wish).b} 🌕`}
+let fcat="";
+$("chips").innerHTML=CATS.map(c=>`<button type="button" class="chip" data-c="${c.id}">${c.ic} ${c.n}</button>`).join("");
+$("chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const c=CATS.find(x=>x.id===b.dataset.c);let t;do t=c.t[Math.random()*c.t.length|0];while(t===$("wish").value&&c.t.length>1);
+  $("wish").value=t;$("wish").oninput();document.querySelectorAll("#chips .chip").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);sfx("tick")};
+function suggest(){const w=$("wish").value.trim(),c=classify(w);if(!w){$("sug").classList.remove("show");return}
+  const pn=PRESETS.find(p=>p[0]===c.p)[1];$("sugT").innerHTML=`🔮 วิเคราะห์: <b>${c.ic} ${c.n}</b> · แนะนำกระทง “${pn}”`;$("sugBtn").dataset.p=c.p;$("sug").classList.add("show")}
+$("wish").oninput=()=>{$("wc").textContent=$("wish").value.length+"/200";clearTimeout(suggest._t);suggest._t=setTimeout(suggest,250);
+  if(BAD.test($("wish").value))$("err").textContent="🤖 ระบบตรวจพบถ้อยคำไม่สุภาพ กรุณาแก้ไข";else if($("err").textContent.startsWith("🤖"))$("err").textContent=""};
+$("sugBtn").onclick=()=>{document.querySelector('.tabs button[data-t=preset]').click();const b=document.querySelector(`.preset[data-id=${$("sugBtn").dataset.p}]`);b.click();b.scrollIntoView({block:"nearest",behavior:"smooth"});toast("✨ เลือกกระทงที่เหมาะกับคำอธิษฐานให้แล้ว")};
+$("name").value=ls.get("bb69_name","");
+$("fchips").innerHTML=`<button type="button" class="chip on" data-c="">🌐 ทั้งหมด</button>`+CATS.map(c=>`<button type="button" class="chip" data-c="${c.id}">${c.ic} ${c.n}</button>`).join("");
+$("fchips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;fcat=b.dataset.c;document.querySelectorAll("#fchips .chip").forEach(x=>x.classList.toggle("on",x===b));renderList()};
+function stats(){const d0=new Date().setHours(0,0,0,0),cnt={};all.forEach(k=>{const c=classify(k.wish).id;cnt[c]=(cnt[c]||0)+1});
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0],c=top&&CATS.find(x=>x.id===top[0]);
+  $("stA").textContent=all.length.toLocaleString("th-TH");$("stT").textContent=all.filter(k=>k.ts>=d0).length.toLocaleString("th-TH");
+  $("stC").textContent=c?c.n:"-";$("stCi").textContent=c?c.ic:"✨"}
+let shown=0;function countUp(n){const from=shown,st=performance.now();shown=n;(function f(t){const p=Math.min(1,(t-st)/800);$("cnt").textContent=Math.round(from+(n-from)*(1-Math.pow(1-p,3))).toLocaleString("th-TH");if(p<1)requestAnimationFrame(f)})(st)}
+/* ripple ทุกปุ่ม */
+document.addEventListener("pointerdown",e=>{const b=e.target.closest("button");if(!b||b.disabled)return;if(getComputedStyle(b).position==="static")b.style.position="relative";b.style.overflow="hidden";
+  const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="rpl";s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;b.appendChild(s);setTimeout(()=>s.remove(),600);sfx("tick")});
+/* เสียงสังเคราะห์ (ปิดไว้ก่อน) */
+let AC=null,sound=false;
+function sfx(t){if(!sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime;o.connect(g);g.connect(AC.destination);
+  const P={tick:[880,.04,.05,"sine"],chime:[1320,.12,.9,"triangle"],boom:[90,.25,.6,"sawtooth"],splash:[300,.15,.5,"sine"]}[t]||[600,.05,.1,"sine"];
+  o.type=P[3];o.frequency.setValueAtTime(P[0],n);if(t==="splash"||t==="boom")o.frequency.exponentialRampToValueAtTime(P[0]/4,n+P[2]);g.gain.setValueAtTime(P[1],n);g.gain.exponentialRampToValueAtTime(.001,n+P[2]);o.start(n);o.stop(n+P[2])}catch(e){}}
+$("snd").onclick=()=>{sound=!sound;$("snd").textContent=sound?"🔊":"🔇";toast(sound?"🔊 เปิดเสียงเอฟเฟกต์แล้ว":"🔇 ปิดเสียงแล้ว");sfx("chime")};
 addEventListener("resize",resize);resize();initData();requestAnimationFrame(tick);
 </script>
 </body>
