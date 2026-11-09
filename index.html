@@ -92,15 +92,35 @@ button{font-family:inherit;cursor:pointer}
 @keyframes bob{50%{transform:translateY(-6px) rotate(1.5deg)}}
 .grp{margin-bottom:12px}
 .grp h3{margin:0 0 6px;font-size:14px;color:var(--gold);font-weight:600}
-.opts{display:flex;flex-wrap:wrap;gap:6px}
-.opt{position:relative;border:1px solid var(--line);background:#0b1430;color:var(--txt);border-radius:10px;padding:7px 10px;font-size:14px;display:flex;align-items:center;gap:6px;transition:.15s}
-.opt:hover{border-color:#5a6bb0}
-.opt.on{border-color:var(--gold);background:#2a2a14;box-shadow:0 0 0 2px rgba(255,211,107,.25)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.opt{position:relative;overflow:hidden;border:1px solid var(--line);background:linear-gradient(#111b44,#0b1430);color:var(--txt);border-radius:12px;padding:6px 6px 8px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.25}
+.opt .th{width:100%;height:58px;display:grid;place-items:center;border-radius:9px;background:radial-gradient(ellipse at 50% 80%,#1d3a7a,transparent 70%);transition:transform .25s}
+.opt .th svg{height:100%;width:auto;max-width:100%}
+.opt:hover .th{transform:scale(1.12) translateY(-2px)}
+.opt .eco{font-size:9.5px}
+.opt .ic{font-size:15px}
+.opt:hover{border-color:#7b8ce0;box-shadow:0 0 14px rgba(120,140,255,.35)}
+.opt.on{border-color:var(--gold);background:linear-gradient(#3a3216,#1c1a0e);box-shadow:0 0 0 2px rgba(255,211,107,.3),0 0 18px rgba(255,200,90,.35)}
+.opt.on::before{content:"✓";position:absolute;top:4px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--gold);color:#3a2200;font-size:11px;font-weight:800;display:grid;place-items:center;z-index:2;animation:pop .35s}
+.opt.on::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,240,190,.25) 50%,transparent 70%);transform:translateX(-100%);animation:shimmer 2.4s ease-in-out infinite}
+@keyframes shimmer{60%,100%{transform:translateX(100%)}}
+.pv.pop{animation:pvpop .6s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pvpop{0%{transform:scale(.7) rotate(-6deg);filter:brightness(1.8)}100%{transform:none}}
+.preview{position:relative}
+.pvring{position:absolute;left:50%;top:55%;width:60%;aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,220,140,.8);transform:translate(-50%,-50%) scale(.3);animation:ring .8s ease-out forwards;pointer-events:none}
+@keyframes ring{to{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
+.preview::after{content:"";position:absolute;left:15%;right:15%;bottom:12%;height:10%;border-radius:50%;background:radial-gradient(rgba(255,210,120,.35),transparent 70%);animation:bsh 3s ease-in-out infinite}
+.pvcol{position:sticky;top:10px;align-self:start}
+.pvcol .preview{position:relative;top:0}
+.pvlbl{margin-top:8px;line-height:1.5;text-align:center;font-size:11.5px;color:#ffe2a0;text-shadow:0 1px 4px #000}
 .eco{font-size:10.5px;background:#1e6b3a;color:#c9ffd9;padding:1px 6px;border-radius:99px}
 .presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
 .preset{border:1px solid var(--line);background:#0b1430;border-radius:12px;padding:6px;color:var(--txt);font-size:12px;transition:.15s}
 .preset img{width:100%;aspect-ratio:1;object-fit:contain;display:block}
-.preset.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,211,107,.3);background:#2a2a14}
+.preset{transition:transform .2s,box-shadow .2s}
+.preset:hover img{transform:scale(1.1) translateY(-3px)}
+.preset img{transition:transform .25s}
+.preset.on{animation:pop .35s;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,211,107,.3);background:#2a2a14}
 .form{margin-top:14px;display:grid;gap:10px}
 .form label{font-size:14px;color:var(--mut)}
 input[type=text],textarea{width:100%;background:#0b1430;border:1px solid var(--line);color:#fff;border-radius:10px;padding:10px 12px;font:inherit;font-size:15px}
@@ -205,7 +225,7 @@ button:not(:disabled):active{transform:scale(.95)}
     <h2>✨ สร้างกระทงของคุณ</h2>
     <div class="tabs"><button data-t="preset" class="on">🎁 แบบสำเร็จ</button><button data-t="custom">🛠️ ประกอบเอง</button></div>
     <div class="builder">
-      <div class="preview"><div class="pv" id="pv"></div></div>
+      <div class="pvcol"><div class="preview"><div class="pv" id="pv"></div></div><div class="pvlbl" id="pvl"></div></div>
       <div>
         <div id="tPreset"><div class="presets" id="presets"></div></div>
         <div id="tCustom" hidden></div>
@@ -316,7 +336,9 @@ function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");cle
 
 /* ===== ตัวเลือก ===== */
 function sparkle(el){const r=el.getBoundingClientRect();for(let i=0;i<10;i++){const s=document.createElement("span");s.className="sparkle";s.textContent=["✨","⭐","💫"][i%3];s.style.left=r.left+r.width/2+"px";s.style.top=r.top+r.height/2+"px";const a=Math.random()*6.28,d=30+Math.random()*40;s.style.setProperty("--x",Math.cos(a)*d+"px");s.style.setProperty("--y",Math.sin(a)*d+"px");document.body.appendChild(s);setTimeout(()=>s.remove(),800)}}
-function renderPreview(){$("pv").innerHTML=art(sel)}
+function renderPreview(fx){$("pv").innerHTML=art(sel);const lb=sel.type==="preset"?PRESETS.find(p=>p[0]===sel.preset)[1]:groups.map(([g,,arr])=>arr.find(a=>a[0]===sel.parts[g])[1]).filter(n=>n!=="ไม่ประดับ").join(" · ");
+  $("pvl").textContent=lb;if(fx){const pv=$("pv");pv.classList.remove("pop");void pv.offsetWidth;pv.classList.add("pop");const r=document.createElement("div");r.className="pvring";pv.parentNode.appendChild(r);setTimeout(()=>r.remove(),800);sparkle(pv)}}
+function refreshThumbs(){document.querySelectorAll("#tCustom .opt").forEach(b=>{b.querySelector(".th").innerHTML=buildSVG({...sel.parts,[b.dataset.g]:b.dataset.v})})}
 $("phBtn").onclick=()=>$("phFile").click();
 $("phDel").onclick=()=>{sel.photo=null;$("phPrev").hidden=$("phDel").hidden=true;$("phFile").value="";renderPreview()};
 $("phFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(!/^image\//.test(f.type))return toast("กรุณาเลือกไฟล์รูปภาพ");
@@ -324,11 +346,12 @@ $("phFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(!/^image\//.t
     c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);sel.photo=c.toDataURL("image/jpeg",.75);URL.revokeObjectURL(u);
     $("phPrev").src=sel.photo;$("phPrev").hidden=$("phDel").hidden=false;renderPreview();sparkle($("phBtn"))};img.onerror=()=>toast("เปิดรูปไม่ได้");img.src=u};
 $("presets").innerHTML=PRESETS.map(([id,n])=>`<button type="button" class="preset${id===sel.preset?" on":""}" data-id="${id}"><img src="${IMG[id]}" alt="">${n}</button>`).join("");
-$("presets").onclick=e=>{const b=e.target.closest(".preset");if(!b)return;sel.type="preset";sel.preset=b.dataset.id;document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);renderPreview()};
+$("presets").onclick=e=>{const b=e.target.closest(".preset");if(!b)return;sel.type="preset";sel.preset=b.dataset.id;document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);renderPreview(true)};
 const groups=[["base","🍃 ฐานกระทง",BASES],["flower","🌺 ดอกไม้",FLOWERS],["candle","🕯️ ธูปเทียน",CANDLES],["deco","💎 ของประดับ",DECOS]];
-$("tCustom").innerHTML=groups.map(([g,t,arr])=>`<div class="grp"><h3>${t}</h3><div class="opts">${arr.map(([v,n,x])=>`<button type="button" class="opt${sel.parts[g]===v?" on":""}" data-g="${g}" data-v="${v}">${g==="base"?`${n} <span class="eco">♻ ${x}</span>`:`${x} ${n}`}</button>`).join("")}</div></div>`).join("");
-$("tCustom").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;sel.parts[b.dataset.g]=b.dataset.v;b.parentNode.querySelectorAll(".opt").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);renderPreview()};
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));sel.type=b.dataset.t;$("tPreset").hidden=sel.type!=="preset";$("tCustom").hidden=sel.type!=="custom";renderPreview()});
+$("tCustom").innerHTML=groups.map(([g,t,arr])=>`<div class="grp"><h3>${t}</h3><div class="opts">${arr.map(([v,n,x])=>`<button type="button" class="opt${sel.parts[g]===v?" on":""}" data-g="${g}" data-v="${v}" title="ตัวอย่าง: ${n}"><span class="th"></span>${g==="base"?`<span>${n}</span><span class="eco">♻ ${x}</span>`:`<span><span class="ic">${x}</span> ${n}</span>`}</button>`).join("")}</div></div>`).join("");
+$("tCustom").onclick=e=>{const b=e.target.closest(".opt");if(!b)return;sel.parts[b.dataset.g]=b.dataset.v;b.parentNode.querySelectorAll(".opt").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);renderPreview(true);refreshThumbs()};
+refreshThumbs();
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));sel.type=b.dataset.t;$("tPreset").hidden=sel.type!=="preset";$("tCustom").hidden=sel.type!=="custom";renderPreview(true)});
 renderPreview();
 $("wish").oninput=()=>$("wc").textContent=$("wish").value.length+"/200";
 
