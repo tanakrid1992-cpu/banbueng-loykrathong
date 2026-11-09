@@ -92,7 +92,11 @@ button{font-family:inherit;cursor:pointer}
 @keyframes bob{50%{transform:translateY(-6px) rotate(1.5deg)}}
 .grp{margin-bottom:12px}
 .grp h3{margin:0 0 6px;font-size:14px;color:var(--gold);font-weight:600}
-.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.opts{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:2px 2px 8px;scrollbar-width:thin;scrollbar-color:#3a4a8a transparent}
+.opts .opt{flex:0 0 108px;scroll-snap-align:start}
+.grp{margin-bottom:6px}
+.grp h3{margin-bottom:4px}
+.opt .th{height:48px!important}
 .opt{position:relative;overflow:hidden;border:1px solid var(--line);background:linear-gradient(#111b44,#0b1430);color:var(--txt);border-radius:12px;padding:6px 6px 8px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;line-height:1.25}
 .opt .th{width:100%;height:58px;display:grid;place-items:center;border-radius:9px;background:radial-gradient(ellipse at 50% 80%,#1d3a7a,transparent 70%);transition:transform .25s}
 .opt .th svg{height:100%;width:auto;max-width:100%}
@@ -246,9 +250,9 @@ button:not(:disabled):active{transform:scale(.95)}
  .st span{font-size:12.5px}.shFoot .btn{min-width:0}
  .builder{grid-template-columns:1fr!important;gap:10px}
  .pvcol{display:flex;gap:12px;align-items:center;position:sticky;top:-12px;z-index:3;background:linear-gradient(#141e4c 85%,transparent);padding:4px 0 10px;margin-top:-4px}
- .pvcol .preview{width:92px;flex:none}.pvlbl{margin:0;text-align:left;font-size:13px}
+ .pvcol .preview{width:92px;flex:none}.pvlbl{margin:0;text-align:left;font-size:13px;flex:1;min-width:0;overflow-wrap:anywhere}
  .presets{grid-template-columns:repeat(3,1fr)}
- .opts{grid-template-columns:repeat(3,1fr)}
+ .opts .opt{flex-basis:96px}
  .sum{grid-template-columns:1fr;gap:10px}
  .sumArt{width:40%}.sumStage{padding:12px 10px 14px}
  .preset{padding:4px;font-size:11.5px}.preset img{aspect-ratio:auto;height:66px}
