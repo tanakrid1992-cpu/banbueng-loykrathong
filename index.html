@@ -300,8 +300,7 @@ button:not(:disabled):active{transform:scale(.95)}
       <div class="pane" data-p="2">
         <div class="f2">
           <div class="fld"><label for="name">👤 ชื่อ / นามแฝง</label><input type="text" id="name" maxlength="40" placeholder="เช่น ครอบครัวสุขใจ" enterkeyhint="next"></div>
-          <div class="ai"><h4><span class="dot"></span>🤖 ให้ผู้ช่วยอัจฉริยะช่วยแต่ง · แตะหัวข้อ</h4><div class="chips" id="chips"></div></div>
-          <div class="fld"><label for="wish">🙏 คำอธิษฐาน</label><textarea id="wish" maxlength="200" rows="3" placeholder="พิมพ์คำอธิษฐานของคุณ หรือแตะหัวข้อด้านบน"></textarea>
+          <div class="fld"><label for="wish">🙏 คำอธิษฐาน</label><textarea id="wish" maxlength="200" rows="3" placeholder="พิมพ์คำอธิษฐานของคุณ..."></textarea>
             <div class="row"><span>ไม่เกิน 200 ตัวอักษร</span><span id="wc">0/200</span></div>
             <div class="sug" id="sug"><span id="sugT"></span><button type="button" id="sugBtn">✨ ใช้กระทงแนะนำ</button></div></div>
           <div class="fld"><label>🖼️ รูปภาพบนกระทง <small>(ไม่บังคับ)</small></label><div class="photoRow"><img id="phPrev" hidden alt=""><button type="button" class="photoBtn" id="phBtn">📷 เลือกรูป</button><button type="button" class="photoBtn" id="phDel" hidden>ลบรูป</button><input type="file" id="phFile" accept="image/*" hidden></div></div>
@@ -329,7 +328,7 @@ button:not(:disabled):active{transform:scale(.95)}
 </main>
 <footer>© 2569 เทศบาลตำบลบ้านบึง อำเภอบ้านบึง จังหวัดชลบุรี · กระทงทุกแบบเป็นวัสดุธรรมชาติ ย่อยสลายได้ 🌿</footer>
 
-<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mk" id="mk"></div><h3 id="mn"></h3><q id="mw"></q><div class="bless" id="mb" hidden></div><time id="mt" style="color:var(--mut);font-size:13px"></time></div></div>
+<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mk" id="mk"></div><h3 id="mn"></h3><q id="mw"></q><time id="mt" style="color:var(--mut);font-size:13px"></time></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -532,8 +531,7 @@ $("goBtn").onclick=()=>openD("make");
 
 /* ===== modal / list ===== */
 function openK(k,bl){$("mk").innerHTML=art(k);$("mn").textContent=(mine.has(k.id)?"⭐ ":"")+k.name;$("mw").textContent=k.wish||"—";$("mt").textContent="🕯️ "+fmt(k.ts);
-  const c=classify(k.wish);$("mb").hidden=!(bl||mine.has(k.id));$("mb").innerHTML=`🌕 <b>พรจากพระแม่คงคา</b> (${c.ic} ${c.n})<br>${esc(blessing(k))}`;
-  $("modal").classList.add("show");sfx("chime");setTimeout(()=>sparkle($("mk")),200)}
+    $("modal").classList.add("show");sfx("chime");setTimeout(()=>sparkle($("mk")),200)}
 $("mx").onclick=()=>$("modal").classList.remove("show");$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("show")};
 function renderList(){const q=$("search").value.trim().toLowerCase();const arr=all.slice().reverse().filter(k=>(!q||k.name.toLowerCase().includes(q)||String(k.wish).toLowerCase().includes(q))&&(!fcat||classify(k.wish).id===fcat)).slice(0,100);
   $("list").innerHTML=arr.length?arr.map(k=>`<div class="item${mine.has(k.id)?" mine":""}" data-id="${k.id}"><div class="th">${art(k)}</div><div><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}<span class="cat">${classify(k.wish).ic} ${classify(k.wish).n}</span></b><p>${esc(k.wish)}</p><time>${fmt(k.ts)}</time></div></div>`).join(""):`<p style="color:var(--mut)">ไม่พบรายการ</p>`}
@@ -577,8 +575,7 @@ function summary(){const name=$("name").value.trim(),wish=$("wish").value.trim()
   $("sumArt").innerHTML=art0(sel);$("sumTag").innerHTML=`${sel.photo?`<img src="${sel.photo}" alt="">`:""}<b>⭐ ${esc(name)}</b>${esc(wish)}`;
   const kname=sel.type==="preset"?PRESETS.find(p=>p[0]===sel.preset)[1]:$("pvl").textContent;
   $("sumInfo").innerHTML=`<div class="sumRow"><button type="button" data-go="1">แก้ไข</button><small>🪷 กระทง</small>${esc(kname)}</div>
-   <div class="sumRow"><button type="button" data-go="2">แก้ไข</button><small>🔮 ผู้ช่วยอัจฉริยะวิเคราะห์</small>${c.ic} ${c.n}</div>
-   <div class="sumRow"><small>🌕 พรที่จะได้รับ</small>${esc(c.b)}</div>`}
+   <div class="sumRow"><button type="button" data-go="2">แก้ไข</button><small>🔮 ผู้ช่วยอัจฉริยะวิเคราะห์</small>${c.ic} ${c.n}</div>`}
 function go(n){if(n===step)return;const back=n<step;step=n;
   document.querySelectorAll(".pane").forEach(p=>{const on=+p.dataset.p===n;p.classList.toggle("on",on);p.classList.toggle("bk",on&&back)});
   document.querySelectorAll(".st").forEach(b=>{const k=+b.dataset.s;b.classList.toggle("on",k===n);b.classList.toggle("done",k<n)});
@@ -586,7 +583,7 @@ function go(n){if(n===step)return;const back=n<step;step=n;
   $("nextBtn").innerHTML=n<3?"ถัดไป ›":"🪷 ลอยกระทงเลย";$("form").scrollTop=0;
   if(n===3)summary();if(n===2&&matchMedia("(min-width:641px)").matches&&!$("name").value)setTimeout(()=>$("name").focus(),350)}
 function check2(){const n=$("name").value.trim(),w=$("wish").value.trim();let m="";
-  if(!n)m="กรุณาใส่ชื่อหรือนามแฝง";else if(!w)m="กรุณาใส่คำอธิษฐาน หรือแตะหัวข้อให้ผู้ช่วยแต่ง";else if(BAD.test(n+" "+w))m=badMsg(n+" "+w);
+  if(!n)m="กรุณาใส่ชื่อหรือนามแฝง";else if(!w)m="กรุณาใส่คำอธิษฐาน";else if(BAD.test(n+" "+w))m=badMsg(n+" "+w);
   $("err2").textContent=m;if(m){const f=!n?$("name"):$("wish");f.focus();f.animate([{transform:"translateX(0)"},{transform:"translateX(-6px)"},{transform:"translateX(6px)"},{transform:"translateX(0)"}],{duration:300})}return !m}
 $("nextBtn").onclick=()=>{if(step===1)go(2);else if(step===2){if(check2())go(3)}else $("form").requestSubmit()};
 $("backBtn").onclick=()=>go(step-1);
@@ -609,9 +606,6 @@ const CATS=[
 function classify(w){w=String(w||"");let best=CATS[7],sc=0;CATS.forEach(c=>{const m=w.match(new RegExp(c.kw.source,"g"));if(m&&m.length>sc){sc=m.length;best=c}});return best}
 function blessing(k){return `คุณ${k.name} — ${classify(k.wish).b} 🌕`}
 let fcat="";
-$("chips").innerHTML=CATS.map(c=>`<button type="button" class="chip" data-c="${c.id}">${c.ic} ${c.n}</button>`).join("");
-$("chips").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const c=CATS.find(x=>x.id===b.dataset.c);let t;do t=c.t[Math.random()*c.t.length|0];while(t===$("wish").value&&c.t.length>1);
-  $("wish").value=t;$("wish").oninput();document.querySelectorAll("#chips .chip").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);sfx("tick")};
 function suggest(){const w=$("wish").value.trim(),c=classify(w);if(!w){$("sug").classList.remove("show");return}
   const pn=PRESETS.find(p=>p[0]===c.p)[1];$("sugT").innerHTML=`🔮 วิเคราะห์: <b>${c.ic} ${c.n}</b> · แนะนำกระทง “${pn}”`;$("sugBtn").dataset.p=c.p;$("sug").classList.add("show")}
 $("wish").oninput=()=>{$("wc").textContent=$("wish").value.length+"/200";clearTimeout(suggest._t);suggest._t=setTimeout(suggest,250);
