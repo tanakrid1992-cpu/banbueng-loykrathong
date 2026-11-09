@@ -163,6 +163,10 @@ button:not(:disabled):active{transform:scale(.95)}
 .bless{font-size:16px;line-height:1.7;margin:8px 0;padding:12px;border-radius:12px;background:rgba(255,211,107,.1);border:1px dashed rgba(255,211,107,.5)}
 .sndBtn{position:absolute;top:3%;right:3%;z-index:7;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(12,20,50,.6);color:#fff;font-size:18px}
 .searchWrap{position:relative}
+.musBtn{position:absolute;top:3%;right:calc(3% + 52px);z-index:7;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,211,107,.6);background:rgba(12,20,50,.6);color:#fff;font-size:18px}
+.musBtn.on{animation:spin 4s linear infinite;box-shadow:0 0 14px rgba(255,211,107,.7)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.musHint{position:absolute;top:calc(3% + 50px);right:3%;z-index:8;background:linear-gradient(#ffe39a,var(--gold2));color:#3a2200;font-weight:700;font-size:13px;padding:6px 14px;border-radius:99px;animation:hb2 1.2s ease-in-out infinite;cursor:pointer}
 </style>
 </head>
 <body>
@@ -178,7 +182,8 @@ button:not(:disabled):active{transform:scale(.95)}
   <div id="river"><div id="world"></div></div>
   <div class="hint" id="hint">👆 แตะกระทงเพื่ออ่านคำอธิษฐาน · ✨ กด “สร้างกระทง” เพื่อลอยของคุณ</div>
   <canvas id="fx"></canvas>
-  <button class="sndBtn" id="snd" title="เปิด/ปิดเสียง">🔇</button>
+  <button class="sndBtn" id="snd" title="เปิด/ปิดเสียงเอฟเฟกต์">🔇</button><button class="musBtn" id="mus" title="เปิด/ปิดเพลง">🎵</button><div class="musHint" id="musHint" hidden>🎵 แตะที่ใดก็ได้เพื่อเปิดเพลง</div>
+  <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
   <div class="sceneBtns">
     <button class="btn ghost" id="findBtn" disabled>🔍 หากระทงของฉัน</button>
     <button class="btn ghost" data-open="wishes" style="position:relative">📜 คำอธิษฐาน <span class="badge" id="badge">0</span></button>
@@ -459,6 +464,14 @@ function sfx(t){if(!sound)return;try{AC=AC||new (window.AudioContext||window.web
   const P={tick:[880,.04,.05,"sine"],chime:[1320,.12,.9,"triangle"],boom:[90,.25,.6,"sawtooth"],splash:[300,.15,.5,"sine"]}[t]||[600,.05,.1,"sine"];
   o.type=P[3];o.frequency.setValueAtTime(P[0],n);if(t==="splash"||t==="boom")o.frequency.exponentialRampToValueAtTime(P[0]/4,n+P[2]);g.gain.setValueAtTime(P[1],n);g.gain.exponentialRampToValueAtTime(.001,n+P[2]);o.start(n);o.stop(n+P[2])}catch(e){}}
 $("snd").onclick=()=>{sound=!sound;$("snd").textContent=sound?"🔊":"🔇";toast(sound?"🔊 เปิดเสียงเอฟเฟกต์แล้ว":"🔇 ปิดเสียงแล้ว");sfx("chime")};
+/* เพลงประกอบ: เล่นทันทีเมื่อเปิดระบบ (ถ้าเบราว์เซอร์บล็อก จะเล่นเมื่อแตะครั้งแรก) */
+const bgm=$("bgm");bgm.volume=.55;let musicOn=true;
+function playBgm(){if(!musicOn)return;const p=bgm.play();if(p)p.then(()=>{$("mus").classList.add("on");$("musHint").hidden=true}).catch(()=>{$("musHint").hidden=false})}
+function unlock(e){if(e.target.closest&&e.target.closest("#mus"))return;if(musicOn&&bgm.paused)playBgm()}
+["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,unlock,{passive:true}));
+$("mus").onclick=()=>{musicOn=!musicOn;if(musicOn)playBgm();else{bgm.pause();$("mus").classList.remove("on")}$("mus").textContent=musicOn?"🎵":"🔈";toast(musicOn?"🎵 เปิดเพลงแล้ว":"🔈 ปิดเพลงแล้ว")};
+bgm.addEventListener("play",()=>{$("mus").classList.add("on");$("musHint").hidden=true});
+playBgm();
 addEventListener("resize",resize);resize();initData();requestAnimationFrame(tick);
 </script>
 </body>
