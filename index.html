@@ -55,7 +55,8 @@ button{font-family:inherit;cursor:pointer}
 .k .tag b{display:block;font-size:1.05em;word-break:break-word;color:#ffe2a0;font-weight:700;letter-spacing:.2px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .k .tag .tph{display:block;width:3.4em;height:3.4em;margin:0 auto .3em;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 3px rgba(255,226,160,.35),0 4px 12px rgba(0,0,0,.4)}
 .k .tag span{display:block;white-space:normal;word-break:break-word;font-size:.9em;color:#e9e6ff;opacity:.95;margin-top:.15em}
-.k .tag::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:.9em;transform:translateX(-50%);background:linear-gradient(rgba(255,236,190,.6),transparent)}
+.k .tag{transform:translate(-50%,calc(var(--dy,0px)*-1))}
+.k .tag::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:calc(.9em + var(--dy,0px));transform:translateX(-50%);background:linear-gradient(rgba(255,236,190,.6),transparent)}
 .k:hover{z-index:2000!important}
 .art .ph{position:absolute;left:50%;top:30%;width:40%!important;aspect-ratio:1;object-fit:cover;border-radius:50%;transform:translateX(-50%);border:2px solid #fff;box-shadow:0 0 0 2px rgba(255,200,80,.8),0 0 14px rgba(255,210,120,.9)}
 .art{position:relative}
@@ -484,6 +485,14 @@ function syncRiver(){
   countUp(Math.max(fbCount,all.length));stats();{const n=Math.max(fbCount,all.length);$("badge").textContent=n>99?"99+":n}
   $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));
 }
+// จัดป้ายไม่ให้ทับกัน: ป้ายของกระทงที่อยู่ไกลกว่าจะถูกยกขึ้นเหนือป้ายที่อยู่ใกล้ (ขยับนุ่มๆ)
+function layoutTags(){const arr=[...nodes.values()].sort((a,b)=>b.y-a.y),placed=[];
+  arr.forEach(n=>{const tg=n.tg||(n.tg=n.el.querySelector(".tag"));if(!tg)return;if(!n.tw){n.tw=tg.offsetWidth;n.th=tg.offsetHeight;if(!n.tw)return}
+    const cx=n.x+n.sz/2,L=cx-n.tw/2-4,R=cx+n.tw/2+4,B0=n.y+n.sz*.02;let dy=0,moved=true,guard=0;
+    while(moved&&guard++<20){moved=false;for(const p of placed){const B=B0-dy,T=B-n.th;if(R>p.L&&L<p.R&&B>p.T-4&&T<p.B){dy=B0-(p.T-6);moved=true}}}
+    n.dy=(n.dy||0)+(dy-(n.dy||0))*.18;if(Math.abs(n.dy-dy)<.5)n.dy=dy;tg.style.setProperty("--dy",n.dy.toFixed(1)+"px");
+    placed.push({L,R,T:B0-n.dy-n.th,B:B0-n.dy})})}
+addEventListener("resize",()=>nodes.forEach(n=>n.tw=0));
 function tick(t){
   // ลอยผ่านหน้าแพ ไม่วน
   nodes.forEach(n=>{const d=n.lane,born=n.k.ts||0;
@@ -494,6 +503,7 @@ function tick(t){
     n.x=x;n.y=M.oy+iy*M.s-sz*.9+Math.sin(t/900+n.ph)*3;n.sz=sz;
     n.el.style.width=sz+"px";n.el.style.fontSize=((10.5+f*3)*(W<600?.88:1))+"px";n.el.style.zIndex=10+Math.round(iy);
     n.el.style.transform=`translate(${n.x}px,${n.y}px)`;n.b.style.transform=`rotate(${Math.sin(t/1300+n.ph)*4}deg)`});
+  layoutTags();
   drawSky(t);drawFx();requestAnimationFrame(tick);
 }
 // ลากแม่น้ำ
