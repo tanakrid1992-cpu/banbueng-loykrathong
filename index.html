@@ -51,9 +51,10 @@ button{font-family:inherit;cursor:pointer}
 .k .body img,.k .body svg{width:100%;display:block}
 .k::after{content:"";position:absolute;left:10%;right:10%;bottom:-4%;height:14%;border-radius:50%;background:radial-gradient(rgba(255,200,90,.35),transparent 70%)}
 .k.mine .body{filter:drop-shadow(0 0 10px #ffd36b) drop-shadow(0 0 22px rgba(255,190,60,.8))}
-.k .tag{position:absolute;left:50%;bottom:96%;transform:translateX(-50%);max-width:12em;width:max-content;text-align:center;font-size:1em;line-height:1.3;padding:.3em .8em;border-radius:.9em;background:rgba(10,16,40,.72);border:1px solid rgba(255,255,255,.2);pointer-events:none;backdrop-filter:blur(2px)}
-.k .tag b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:1.05em}
-.k .tag span{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;font-size:.9em;opacity:.92}
+.k .tag{position:absolute;left:50%;bottom:96%;transform:translateX(-50%);max-width:14em;width:max-content;text-align:center;font-size:1em;line-height:1.3;padding:.3em .8em;border-radius:.9em;background:rgba(10,16,40,.72);border:1px solid rgba(255,255,255,.2);pointer-events:none;backdrop-filter:blur(2px)}
+.k .tag b{display:block;font-size:1.05em;word-break:break-word}
+.k .tag .tph{display:block;width:3.4em;height:3.4em;margin:0 auto .3em;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 0 0 2px rgba(255,200,80,.8),0 0 12px rgba(255,210,120,.9)}
+.k .tag span{display:block;white-space:normal;word-break:break-word;font-size:.9em;opacity:.95}
 .k .tag::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(10,16,40,.72)}
 .k:hover{z-index:2000!important}
 .art .ph{position:absolute;left:50%;top:30%;width:40%!important;aspect-ratio:1;object-fit:cover;border-radius:50%;transform:translateX(-50%);border:2px solid #fff;box-shadow:0 0 0 2px rgba(255,200,80,.8),0 0 14px rgba(255,210,120,.9)}
@@ -339,7 +340,7 @@ function syncRiver(){
   const want=onRiver(),ids=new Set(want.map(k=>k.id));
   nodes.forEach((n,id)=>{if(!ids.has(id)){n.el.remove();nodes.delete(id)}});
   want.forEach(k=>{if(nodes.has(k.id))return;const h=hash(k.id),el=document.createElement("div");
-    el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag"><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art(k)}</div>`;
+    el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag">${okPhoto(k.photo)?`<img class="tph" src="${k.photo}" alt="">`:""}<b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art0(k)}</div>`;
     el.onclick=()=>openK(k);world.appendChild(el);
     nodes.set(k.id,{el,k,lane:(h%997)/997,off:((h>>>11)%1009)/1009,ph:(h%628)/100,x:0,y:0,sz:0});});
   countUp(Math.max(fbCount,all.length));stats();{const n=Math.max(fbCount,all.length);$("badge").textContent=n>99?"99+":n}
@@ -353,7 +354,7 @@ function tick(t){
     const vb=(H-M.oy)/M.s-40,y1=Math.max(P.y0+20,Math.min(P.y1,vb)),iy=P.y0+(y1-P.y0)*d,sz=Math.max(46,(P.sz[0]+(P.sz[1]-P.sz[0])*d)*M.s),f=d;
     const x=-sz+p*(W+sz*2);
     n.x=x;n.y=M.oy+iy*M.s-sz*.9+Math.sin(t/900+n.ph)*3;n.sz=sz;
-    n.el.style.width=sz+"px";n.el.style.fontSize=((8.5+f*3.5)*(W<600?.85:1))+"px";n.el.style.zIndex=10+Math.round(iy);
+    n.el.style.width=sz+"px";n.el.style.fontSize=((10.5+f*3)*(W<600?.88:1))+"px";n.el.style.zIndex=10+Math.round(iy);
     n.el.style.transform=`translate(${n.x}px,${n.y}px) rotate(${Math.sin(t/1300+n.ph)*4}deg)`});
   drawSky(t);drawFx();requestAnimationFrame(tick);
 }
