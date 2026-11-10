@@ -400,6 +400,10 @@ h1,h2,h3,.btn,.dk,.st,.tabs button,.counter,.org{font-family:Prompt,Sarabun,sans
  #wishes{padding:18px 14px}
 }
 .toast.show{opacity:1;transform:translateX(-50%)!important}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+#scene{height:100vh;height:100dvh;min-height:0}
+main{position:fixed;inset:0;z-index:31;pointer-events:none;padding:0;display:block;max-width:none}
+main>*{pointer-events:auto}
 </style>
 </head>
 <body>
@@ -469,12 +473,11 @@ h1,h2,h3,.btn,.dk,.st,.tabs button,.counter,.org{font-family:Prompt,Sarabun,sans
     <div class="list" id="list"></div>
   </section>
 </main>
-<footer>© 2569 เทศบาลตำบลบ้านบึง อำเภอบ้านบึง จังหวัดชลบุรี · กระทงทุกแบบเป็นวัสดุธรรมชาติ ย่อยสลายได้ 🌿</footer>
 
 <div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mstage"><div class="mk" id="mk"></div></div><div class="mbody"><h3 id="mn"></h3><q id="mw"></q><time id="mt"></time></div></div></div>
 <div class="toast" id="toast"></div>
 <div id="bl"><div class="bk"></div><div class="halo"></div><div class="who"><img alt=""></div>
- <div class="bcard"><div class="bic" id="bic">🪷</div><div class="btxt" id="btxt"></div><div class="bsig">เทศบาลตำบลบ้านบึง · ลอยกระทง ๒๕๖๙ <span style="opacity:.6">· แตะเพื่อสุ่มใหม่</span></div></div>
+ <div class="bcard"><div class="bic" id="bic">🪷</div><div class="btxt" id="btxt"></div><div class="bsig">เทศบาลตำบลบ้านบึง · ลอยกระทง ๒๕๖๙</div></div>
  <button class="bx" id="bx" aria-label="ปิด">×</button></div>
 
 <script>
