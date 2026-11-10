@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ลอยกระทงออนไลน์ เทศบาลตำบลบ้านบึง 2569</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Charm:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&family=Charm:wght@700&display=swap" rel="stylesheet">
 <style>
 :root{--gold:#ffd36b;--gold2:#e8a93a;--ink:#0b1430;--panel:#121c3d;--line:#2a3766;--txt:#eef1ff;--mut:#9fb0e0}
 *{box-sizing:border-box}
@@ -296,28 +296,132 @@ button:not(:disabled):active{transform:scale(.95)}
 .bcard .b1{background:linear-gradient(#ffe39a,#e8a93a);color:#3a2200}
 .bcard .b2{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)!important}
 #bl .bx{position:absolute;top:16px;right:16px;z-index:4;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(10,16,40,.6);color:#fff;font-size:24px}
+
+/* ================= DESIGN SYSTEM v2 ================= */
+:root{--glass:rgba(14,20,52,.55);--glass2:rgba(22,30,74,.72);--stroke:rgba(255,255,255,.14);--goldS:rgba(255,215,130,.45);--r:20px;--sh:0 12px 40px rgba(0,0,0,.35)}
+body,button,input,textarea{font-family:Sarabun,system-ui,sans-serif}
+h1,h2,h3,.btn,.dk,.st,.tabs button,.counter,.org{font-family:Prompt,Sarabun,sans-serif}
+/* header */
+.title{top:max(16px,env(safe-area-inset-top));left:clamp(14px,3vw,36px);padding:16px 20px 16px;border-radius:24px;background:linear-gradient(150deg,rgba(10,16,44,.55),rgba(10,16,44,.2));border:1px solid var(--stroke);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:var(--sh);max-width:min(560px,calc(100vw - 130px));text-shadow:none}
+.org{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;color:#ffe2a0;padding:4px 12px 4px 6px;border-radius:99px;background:rgba(255,211,107,.12);border:1px solid rgba(255,211,107,.3)}
+.org i{font-style:normal;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;background:rgba(255,211,107,.2);font-size:12px}
+.title h1{margin:8px 0 2px;font-family:Prompt,sans-serif;font-weight:700;font-size:clamp(24px,3.6vw,44px);letter-spacing:-.3px;line-height:1.15;background:linear-gradient(180deg,#fff,#ffe9b0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 10px rgba(0,0,0,.45))}
+.title h1 em{font-style:normal;font-family:Charm,serif;background:linear-gradient(180deg,#ffe58a,#f0a93a);-webkit-background-clip:text;background-clip:text}
+.title p{font-size:clamp(13px,1.5vw,16px);color:#dfe5ff;margin:0}
+.counter{margin-top:12px;padding:7px 14px;gap:8px;font-size:14px;font-weight:500;background:rgba(255,255,255,.08);border:1px solid var(--stroke)}
+.counter b{font-size:20px;color:#ffd36b;font-variant-numeric:tabular-nums}
+.live{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.7);animation:livep 1.8s infinite}
+@keyframes livep{70%{box-shadow:0 0 0 8px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+/* controls top-right */
+.ctrl{position:absolute;top:max(16px,env(safe-area-inset-top));right:clamp(14px,3vw,36px);z-index:7;display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--glass);border:1px solid var(--stroke);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:var(--sh)}
+.ctrl button{position:static!important;width:40px;height:40px;border-radius:50%;border:0!important;background:transparent;font-size:18px;color:#fff;box-shadow:none}
+.ctrl button:hover{background:rgba(255,255,255,.1)}
+.ctrl .musBtn.on{background:rgba(255,211,107,.18);animation:none;box-shadow:inset 0 0 0 1px var(--goldS)}
+.musHint{top:calc(max(16px,env(safe-area-inset-top)) + 56px);right:clamp(14px,3vw,36px);background:var(--glass2);color:#ffe2a0;border:1px solid var(--goldS);backdrop-filter:blur(10px);font-weight:500;padding:8px 14px;box-shadow:var(--sh)}
+/* dock */
+.dock{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:6px;padding:6px;border-radius:26px;background:rgba(12,18,48,.6);border:1px solid var(--stroke);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.dk{position:relative;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:#e9ecff;font-size:15px;font-weight:500;padding:12px 18px;border-radius:20px;white-space:nowrap}
+.dk i{font-style:normal;font-size:20px;line-height:1}
+.dk:hover:not(:disabled){background:rgba(255,255,255,.08)}
+.dk:disabled{opacity:.4}
+.dk.has{color:#ffe2a0}
+.dkMain{background:linear-gradient(135deg,#ffe9a8,#f2b544 60%,#e39a2c);color:#3a2200;font-weight:600;padding:14px 26px;font-size:16.5px;box-shadow:0 8px 24px rgba(240,170,60,.45),inset 0 1px 0 rgba(255,255,255,.6);animation:glow 2.4s infinite}
+.dkMain:hover{background:linear-gradient(135deg,#fff0bf,#f5bf55 60%,#e8a23a)!important}
+.dk .badge{position:absolute;top:2px;right:6px;left:auto;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:11px;font-weight:700;border-radius:99px;background:#ef4444;color:#fff;box-shadow:0 0 0 2px rgba(12,18,48,.9);animation:none}
+.hint{bottom:calc(max(18px,env(safe-area-inset-bottom)) + 84px);background:var(--glass2);color:#f1f3ff;border:1px solid var(--stroke);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-weight:500;box-shadow:var(--sh)}
+/* toast */
+.toast{opacity:0;transform:translateX(-50%) translateY(30px)!important;transition:opacity .3s,transform .3s!important;pointer-events:none;background:var(--glass2);border:1px solid var(--goldS);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh);font-weight:500;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 90px);z-index:80}
+/* wishes drawer */
+#wishes{display:flex;flex-direction:column;gap:12px;padding:22px 20px;background:linear-gradient(170deg,rgba(24,32,80,.96),rgba(10,14,40,.97));border:1px solid var(--stroke);backdrop-filter:blur(14px)}
+#wishes h2{margin:0;font-size:21px}
+#wishes .sub{margin:-8px 0 0;color:var(--mut);font-size:13px}
+#wishes .x{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08)!important;top:18px;right:18px}
+.stats{margin:0;gap:10px}
+.stat{border-radius:16px;padding:12px 8px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--stroke)}
+.stat i{font-size:18px;animation:none}
+.stat b{font-family:Prompt,sans-serif;font-size:22px;margin:2px 0}
+.sbox{position:relative}
+.sbox i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-style:normal;opacity:.7}
+.sbox input{padding-left:40px!important;border-radius:14px!important;background:rgba(5,10,30,.55)!important;height:46px}
+#fchips{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}
+#fchips::-webkit-scrollbar{display:none}
+#fchips .chip{flex:none;padding:7px 13px;border-radius:99px;border:1px solid var(--stroke);background:rgba(255,255,255,.05)}
+#fchips .chip.on{background:linear-gradient(135deg,#ffe9a8,#f2b544);color:#3a2200;border-color:transparent;font-weight:600}
+.list{flex:1;min-height:0;gap:8px}
+.item{align-items:center;gap:12px;padding:12px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid transparent;transition:background .2s,border-color .2s,transform .2s}
+.item:hover{background:rgba(255,255,255,.08);border-color:var(--stroke);transform:translateX(-2px)}
+.item.mine{background:linear-gradient(135deg,rgba(255,211,107,.14),rgba(255,211,107,.03));border-color:var(--goldS)}
+.item .th{width:54px;height:54px;border-radius:14px;background:radial-gradient(ellipse at 50% 80%,#24418a,#101a44);display:grid;place-items:center;padding:4px}
+.item .ib{flex:1;min-width:0}
+.item .ih{display:flex;align-items:baseline;gap:8px}
+.item .ih b{font-family:Prompt,sans-serif;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .ih time{margin-left:auto;flex:none;font-size:11.5px}
+.item p{font-size:14px;line-height:1.45;color:#dfe4ff;margin:2px 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .cat{margin:0;font-size:11px;padding:2px 8px;background:rgba(255,255,255,.08);color:#cfd6ff}
+.item .go{font-style:normal;font-size:22px;color:var(--mut);flex:none}
+.empty{text-align:center;color:var(--mut);padding:40px 0}
+.empty i{display:block;font-style:normal;font-size:40px;margin-bottom:8px;opacity:.6}
+/* read modal */
+.modal{background:rgba(3,6,20,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.mbox{max-width:400px;padding:0;overflow:hidden;border-radius:28px;background:linear-gradient(170deg,#1c2766,#0f1640);border:1px solid var(--goldS);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.mbox .x{top:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.25);font-size:20px;z-index:2}
+.mstage{position:relative;padding:28px 0 18px;background:radial-gradient(ellipse at 50% 100%,#2c58b0 0%,#162257 60%,transparent 100%)}
+.mstage::after{content:"";position:absolute;left:25%;right:25%;bottom:14px;height:14px;border-radius:50%;background:radial-gradient(rgba(255,210,120,.45),transparent 70%)}
+.mbox .mk{width:150px;margin:0 auto;animation:bob 3s ease-in-out infinite;position:relative;z-index:1}
+.mbody{padding:16px 24px 24px}
+.mbox h3{font-family:Prompt,sans-serif;font-size:22px;font-weight:600;margin:0}
+.mbox q{font-size:17px;line-height:1.65;color:#eef0ff;margin:10px 0 14px;quotes:"“" "”"}
+.mbox time{display:inline-block;font-size:12.5px;color:var(--mut);padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.06)}
+/* sheet polish */
+.drawer.sheet{border-color:var(--stroke)}
+.tabs{background:rgba(5,10,30,.5);border:1px solid var(--stroke);border-radius:14px}
+.tabs button{border-radius:10px;font-weight:500}
+.tabs button.on{background:linear-gradient(135deg,#2f45a0,#24357a);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.preset,.opt{border-color:var(--stroke)!important;border-radius:16px!important}
+.preset.on,.opt.on{border-color:#ffd36b!important}
+.shFoot .btn.gold{font-family:Prompt,sans-serif;font-weight:600;font-size:16px}
+/* mobile */
+@media(max-width:640px){
+ .title{left:12px;right:12px;max-width:none;padding:12px 14px;border-radius:20px}
+ .title h1{font-size:24px;margin:6px 0 0}
+ .title p{font-size:12.5px}
+ .counter{margin-top:8px;padding:5px 12px;font-size:13px}.counter b{font-size:17px}
+ .org{font-size:11px}
+ .ctrl{top:max(12px,env(safe-area-inset-top));right:12px;flex-direction:column}
+ .ctrl button{width:38px;height:38px;font-size:16px}
+ .title{right:66px}
+ .musHint{top:calc(max(12px,env(safe-area-inset-top)) + 168px);right:12px;font-size:12px}
+ .dock{left:12px;right:12px;transform:none;bottom:max(14px,env(safe-area-inset-bottom));justify-content:space-between;border-radius:24px}
+ .dk{flex-direction:column;gap:2px;padding:8px 6px;font-size:11.5px;flex:1}
+ .dk i{font-size:20px}
+ .dkMain{flex:1.4;padding:10px 6px;font-size:13.5px;border-radius:18px}
+ .dk .badge{right:calc(50% - 26px);top:2px}
+ .hint{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 84px);font-size:12px;padding:8px 12px}
+ #wishes{padding:18px 14px}
+}
+.toast.show{opacity:1;transform:translateX(-50%)!important}
 </style>
 </head>
 <body>
 
 <section id="scene">
   <div class="bg"></div><canvas id="sky"></canvas>
-  <div class="title">
-    <small>เทศบาลตำบลบ้านบึง · อำเภอบ้านบึง · จังหวัดชลบุรี</small>
-    <h1>ลอยกระทงออนไลน์ ๒๕๖๙</h1>
+  <header class="title">
+    <span class="org"><i>🏛️</i>เทศบาลตำบลบ้านบึง · ชลบุรี</span>
+    <h1>ลอยกระทงออนไลน์ <em>๒๕๖๙</em></h1>
     <p>ลอยกระทงที่บ้านเรา ลอยกระทงที่บ้านบึง</p>
-    <div class="counter">🪷 ลอยแล้ว <b id="cnt">0</b> กระทง</div>
-  </div>
+    <div class="counter"><span class="live"></span>ลอยแล้ว <b id="cnt">0</b> กระทง</div>
+  </header>
   <div id="river"><div id="world"></div></div>
-  <div class="hint" id="hint">👆 แตะกระทงเพื่ออ่านคำอธิษฐาน · ✨ กด “สร้างกระทง” เพื่อลอยของคุณ</div>
+  <div class="hint" id="hint">👆 แตะกระทงเพื่ออ่านคำอธิษฐาน · แตะผู้บริหารเพื่อรับพร</div>
   <canvas id="fx"></canvas>
-  <button class="sndBtn" id="snd" title="เปิด/ปิดเสียงเอฟเฟกต์">🔇</button><button class="musBtn" id="mus" title="เปิด/ปิดเพลง">🎵</button><div class="musHint" id="musHint" hidden>🎵 แตะที่ใดก็ได้เพื่อเปิดเพลง</div>
+  <div class="ctrl"><button class="musBtn" id="mus" title="เปิด/ปิดเพลง" aria-label="เพลง">🎵</button><button class="sndBtn" id="snd" title="เปิด/ปิดเสียงเอฟเฟกต์" aria-label="เสียงเอฟเฟกต์">🔇</button></div><div class="musHint" id="musHint" hidden>🎵 แตะที่ใดก็ได้เพื่อเปิดเพลง</div>
   <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
-  <div class="sceneBtns">
-    <button class="btn ghost" id="findBtn" disabled>🔍 หากระทงของฉัน</button>
-    <button class="btn ghost" data-open="wishes" style="position:relative">📜 คำอธิษฐาน <span class="badge" id="badge">0</span></button>
-    <button class="btn gold shine" id="goBtn">🪷 ลอยกระทงเลย</button>
-  </div>
+  <nav class="dock" aria-label="เมนูหลัก">
+    <button class="dk" id="findBtn" disabled><i>🔍</i><span>กระทงของฉัน</span></button>
+    <button class="dk dkMain shine" id="goBtn"><i>🪷</i><span>ลอยกระทง</span></button>
+    <button class="dk" data-open="wishes"><i>📜</i><span>คำอธิษฐาน</span><b class="badge" id="badge">0</b></button>
+  </nav>
 </section>
 
 <div id="shade"></div>
@@ -358,16 +462,16 @@ button:not(:disabled):active{transform:scale(.95)}
   </section>
 
   <section class="card drawer" id="wishes"><button class="x" data-close aria-label="ปิด">×</button>
-    <h2>📜 คำอธิษฐานล่าสุด</h2>
+    <h2>📜 คำอธิษฐานล่าสุด</h2><p class="sub">แตะรายการเพื่อดูกระทงบนแม่น้ำ</p>
     <div class="stats"><div class="stat"><i>🪷</i><b id="stA">0</b><small>กระทงทั้งหมด</small></div><div class="stat"><i>📅</i><b id="stT">0</b><small>ลอยวันนี้</small></div><div class="stat"><i id="stCi">✨</i><b id="stC" style="font-size:14px">-</b><small>คำอธิษฐานยอดนิยม</small></div></div>
-    <input type="text" id="search" placeholder="🔍 ค้นหาชื่อหรือคำอธิษฐาน...">
-    <div class="chips" id="fchips" style="margin-top:8px"></div>
-    <div class="list" id="list" style="margin-top:10px"></div>
+    <div class="sbox"><i>🔍</i><input type="text" id="search" placeholder="ค้นหาชื่อหรือคำอธิษฐาน"></div>
+    <div class="chips" id="fchips"></div>
+    <div class="list" id="list"></div>
   </section>
 </main>
 <footer>© 2569 เทศบาลตำบลบ้านบึง อำเภอบ้านบึง จังหวัดชลบุรี · กระทงทุกแบบเป็นวัสดุธรรมชาติ ย่อยสลายได้ 🌿</footer>
 
-<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mk" id="mk"></div><h3 id="mn"></h3><q id="mw"></q><time id="mt" style="color:var(--mut);font-size:13px"></time></div></div>
+<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="ปิด">×</button><div class="mstage"><div class="mk" id="mk"></div></div><div class="mbody"><h3 id="mn"></h3><q id="mw"></q><time id="mt"></time></div></div></div>
 <div class="toast" id="toast"></div>
 <div id="bl"><div class="bk"></div><div class="halo"></div><div class="who"><img alt=""></div>
  <div class="bcard"><div class="bic" id="bic">🪷</div><div class="btxt" id="btxt"></div><div class="bsig">เทศบาลตำบลบ้านบึง · ลอยกระทง ๒๕๖๙ <span style="opacity:.6">· แตะเพื่อสุ่มใหม่</span></div></div>
@@ -477,7 +581,8 @@ let all=[];                       // ข้อมูลกระทงทั้�
 let mine=new Set(ls.get("bb69_mine",[]));
 let sel={type:"preset",preset:"k8",parts:{base:"leaf",flower:"lotus",candle:"yellow",deco:"garland"}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt=t=>new Date(t).toLocaleString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const fmtAbs=t=>new Date(t).toLocaleString("th-TH",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const fmt=t=>{const d=(Date.now()-t)/1000;return d<60?"เมื่อสักครู่":d<3600?Math.floor(d/60)+" นาทีที่แล้ว":d<86400?Math.floor(d/3600)+" ชั่วโมงที่แล้ว":fmtAbs(t)};
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
 
 /* ===== ตัวเลือก ===== */
@@ -520,7 +625,7 @@ function syncRiver(){
     el.onclick=()=>openK(k);world.appendChild(el);
     nodes.set(k.id,{el,k,b:el.querySelector(".body"),lane:(h%997)/997,off:((h>>>11)%1009)/1009,ph:(h%628)/100,x:0,y:0,sz:0});});
   countUp(Math.max(fbCount,all.length));stats();{const n=Math.max(fbCount,all.length);$("badge").textContent=n>99?"99+":n}
-  $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));
+  $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));$("findBtn").classList.toggle("has",!$("findBtn").disabled);
 }
 // จัดป้ายไม่ให้ทับกัน: ป้ายของกระทงที่อยู่ไกลกว่าจะถูกยกขึ้นเหนือป้ายที่อยู่ใกล้ (ขยับนุ่มๆ)
 function layoutTags(){const arr=[...nodes.values()].sort((a,b)=>b.y-a.y),placed=[];
@@ -585,7 +690,7 @@ function openK(k,bl){$("mk").innerHTML=art(k);$("mn").textContent=(mine.has(k.id
     $("modal").classList.add("show");sfx("chime");setTimeout(()=>sparkle($("mk")),200)}
 $("mx").onclick=()=>$("modal").classList.remove("show");$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("show")};
 function renderList(){const q=$("search").value.trim().toLowerCase();const arr=all.slice().reverse().filter(k=>(!q||k.name.toLowerCase().includes(q)||String(k.wish).toLowerCase().includes(q))&&(!fcat||classify(k.wish).id===fcat)).slice(0,100);
-  $("list").innerHTML=arr.length?arr.map(k=>`<div class="item${mine.has(k.id)?" mine":""}" data-id="${k.id}"><div class="th">${art(k)}</div><div><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}<span class="cat">${classify(k.wish).ic} ${classify(k.wish).n}</span></b><p>${esc(k.wish)}</p><time>${fmt(k.ts)}</time></div></div>`).join(""):`<p style="color:var(--mut)">ไม่พบรายการ</p>`}
+  $("list").innerHTML=arr.length?arr.map(k=>`<div class="item${mine.has(k.id)?" mine":""}" data-id="${k.id}"><div class="th">${art(k)}</div><div class="ib"><div class="ih"><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><time>${fmt(k.ts)}</time></div><p>${esc(k.wish)}</p><span class="cat">${classify(k.wish).ic} ${classify(k.wish).n}</span></div><i class="go">›</i></div>`).join(""):`<div class="empty"><i>🪷</i>ยังไม่มีคำอธิษฐานที่ตรงกัน</div><p hidden>p>`}
 $("search").oninput=renderList;$("list").onclick=e=>{const it=e.target.closest(".item");if(it){const k=all.find(k=>k.id===it.dataset.id);closeD();if(nodes.has(k.id)){const n=nodes.get(k.id);n.el.classList.remove("pulse");void n.el.offsetWidth;n.el.classList.add("pulse")}setTimeout(()=>openK(k),450)}};
 
 /* ===== บันทึกข้อมูล ===== */
