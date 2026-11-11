@@ -419,6 +419,12 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 #scene{height:100vh;height:100dvh;min-height:0}
 main{position:fixed;inset:0;z-index:31;pointer-events:none;padding:0;display:block;max-width:none}
 main>*{pointer-events:auto}
+/* หัวเว็บแบบไม่มีกรอบ */
+.title{background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:6px 4px!important}
+.title h1{filter:drop-shadow(0 2px 3px rgba(0,0,0,.85)) drop-shadow(0 0 16px rgba(0,0,0,.55))!important}
+.title p{text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 12px rgba(0,0,0,.6)}
+.org{background:rgba(10,16,44,.45)!important;backdrop-filter:blur(4px)}
+.counter{background:rgba(10,16,44,.45)!important;backdrop-filter:blur(4px)}
 </style>
 </head>
 <body>
