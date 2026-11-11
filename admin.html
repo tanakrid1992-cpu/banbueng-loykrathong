@@ -92,11 +92,11 @@ header .me{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:1
 <section id="login">
   <form class="lcard" id="lform">
     <div class="ic">🛡️</div>
-    <h1>ระบบบริหารจัดการ</h1>
+    <h1>จัดการกระทง</h1>
     <p>ลอยกระทงออนไลน์ ๒๕๖๙ · เทศบาลตำบลบ้านบึง<br>สำหรับเจ้าหน้าที่เท่านั้น</p>
-    <label for="em">อีเมล</label><input id="em" type="email" autocomplete="username" required>
-    <label for="pw">รหัสผ่าน</label><input id="pw" type="password" autocomplete="current-password" required>
-    <button class="btn gold" id="lbtn">🔐 เข้าสู่ระบบ</button>
+    <input id="em" type="hidden" value="staff@banbueng-loykrathong.web.app">
+    <label for="pw">รหัสผ่านเจ้าหน้าที่</label><input id="pw" type="password" autocomplete="current-password" required>
+    <button class="btn gold" id="lbtn">🔐 เข้าสู่โหมดจัดการ</button>
     <div class="err" id="lerr"></div>
   </form>
 </section>
@@ -105,7 +105,7 @@ header .me{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:1
   <header>
     <div class="logo">🪷</div>
     <div><h1>ระบบบริหารจัดการลอยกระทง</h1><small>เทศบาลตำบลบ้านบึง · ๒๕๖๙</small></div>
-    <div class="me"><span id="who"></span><a class="btn ghost" href="./" target="_blank" style="text-decoration:none">🌐 ดูหน้าเว็บ</a><button class="btn ghost" id="out">ออกจากระบบ</button></div>
+    <div class="me"><span id="who"></span><a class="btn ghost" href="./" target="_blank" style="text-decoration:none">🌐 ดูหน้าเว็บ</a><button class="btn ghost" id="out">ออกจากโหมดจัดการ</button></div>
   </header>
 
   <div class="stats">
@@ -148,7 +148,7 @@ const BAD=/(เหี้ย|เหี่ย|ควย|เย็ด|สัส|ไ
 /* ---------- login ---------- */
 $("lform").onsubmit=async e=>{e.preventDefault();$("lerr").textContent="";$("lbtn").disabled=true;
   try{await auth.signInWithEmailAndPassword($("em").value.trim(),$("pw").value)}
-  catch(x){$("lerr").textContent=({"auth/invalid-credential":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/wrong-password":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/user-not-found":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/too-many-requests":"ลองหลายครั้งเกินไป กรุณารอสักครู่"})[x.code]||("เข้าสู่ระบบไม่สำเร็จ: "+x.code)}
+  catch(x){$("lerr").textContent=({"auth/invalid-credential":"รหัสผ่านไม่ถูกต้อง","auth/wrong-password":"รหัสผ่านไม่ถูกต้อง","auth/user-not-found":"ยังไม่ได้สร้างบัญชีเจ้าหน้าที่ใน Firebase","auth/invalid-login-credentials":"รหัสผ่านไม่ถูกต้อง","auth/too-many-requests":"ลองหลายครั้งเกินไป กรุณารอสักครู่"})[x.code]||("เข้าสู่ระบบไม่สำเร็จ: "+x.code)}
   finally{$("lbtn").disabled=false}};
 $("out").onclick=()=>auth.signOut();
 
@@ -156,9 +156,7 @@ let data=[],shown=100,sel=new Set(),live=null;
 auth.onAuthStateChanged(async u=>{
   if(live){ref.off("value",live);live=null}
   if(!u){$("app").style.display="none";$("login").style.display="grid";return}
-  const ok=await db.ref("admins/"+u.uid).get().then(s=>s.val()===true).catch(()=>false);
-  if(!ok){$("lerr").innerHTML=`บัญชีนี้ไม่มีสิทธิ์ผู้ดูแล<br><small style="color:#9aa6d6">UID: ${u.uid}</small>`;await auth.signOut();return}
-  $("login").style.display="none";$("app").style.display="block";$("who").textContent="👤 "+u.email;
+  $("login").style.display="none";$("app").style.display="block";$("who").textContent="🛡️ โหมดเจ้าหน้าที่";
   live=ref.on("value",s=>{const v=s.val()||{};data=Object.entries(v).map(([id,k])=>({id,...k})).sort((a,b)=>(b.ts||0)-(a.ts||0));sel=new Set([...sel].filter(id=>v[id]));render()},
     e=>toast("โหลดข้อมูลไม่ได้: "+e.code));
 });
