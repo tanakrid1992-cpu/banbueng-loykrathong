@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ระบบบริหารจัดการ · ลอยกระทงออนไลน์ ๒๕๖๙ เทศบาลตำบลบ้านบึง</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Prompt:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1030;--p:#141b46;--p2:#1b2460;--line:rgba(255,255,255,.1);--txt:#eef1ff;--mut:#9aa6d6;--gold:#ffd36b;--red:#ef4444;--green:#22c55e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Sarabun,system-ui,sans-serif;background:radial-gradient(ellipse at 20% 0%,#1d2a72,transparent 50%),radial-gradient(ellipse at 100% 100%,#3a1d5e,transparent 45%),var(--bg);color:var(--txt);min-height:100vh}
+h1,h2,h3,button,.stat b{font-family:Prompt,Sarabun,sans-serif}
+button{cursor:pointer;font:inherit;border:0;transition:transform .15s,filter .15s,background .2s}
+button:hover:not(:disabled){filter:brightness(1.1)}button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{font:inherit;color:#fff;background:rgba(5,10,30,.6);border:1px solid var(--line);border-radius:12px;padding:11px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,211,107,.18)}
+.btn{padding:11px 18px;border-radius:12px;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;gap:8px}
+.gold{background:linear-gradient(135deg,#ffe9a8,#f2b544);color:#3a2200}
+.ghost{background:rgba(255,255,255,.07);color:#fff;border:1px solid var(--line)}
+.danger{background:linear-gradient(135deg,#f87171,#dc2626);color:#fff}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lcard{width:min(400px,100%);background:linear-gradient(160deg,rgba(30,40,100,.8),rgba(14,20,52,.85));border:1px solid rgba(255,215,130,.3);border-radius:24px;padding:32px 28px;box-shadow:0 30px 80px rgba(0,0,0,.5);backdrop-filter:blur(10px)}
+.lcard .ic{font-size:48px;text-align:center}
+.lcard h1{text-align:center;margin:8px 0 2px;font-size:22px}
+.lcard p{text-align:center;color:var(--mut);margin:0 0 22px;font-size:14px}
+.lcard label{display:block;font-size:13.5px;color:#cfd6ff;margin:12px 0 6px}
+.lcard input{width:100%}
+.lcard .btn{width:100%;justify-content:center;margin-top:20px;padding:13px}
+.err{color:#fca5a5;font-size:13.5px;min-height:1.2em;margin-top:10px;text-align:center}
+/* app */
+#app{display:none;max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+header .logo{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,#ffe9a8,#f2b544)}
+header h1{margin:0;font-size:20px}
+header small{color:var(--mut);font-size:13px}
+header .me{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:16px}
+.stat i{font-style:normal;font-size:22px}
+.stat b{display:block;font-size:28px;color:var(--gold);margin:4px 0 0;font-variant-numeric:tabular-nums}
+.stat small{color:var(--mut);font-size:13px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--p);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:12px;position:sticky;top:8px;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.bar .sb{flex:1;min-width:200px;position:relative}
+.bar .sb input{width:100%;padding-left:38px}
+.bar .sb::before{content:"🔍";position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.7}
+.bar .sel{font-size:13.5px;color:var(--gold);font-weight:600;white-space:nowrap}
+.tbl{background:var(--p);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.row{display:grid;grid-template-columns:44px 1.1fr 2.4fr 140px 90px;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);transition:background .2s}
+.row:last-child{border-bottom:0}
+.row.h{background:rgba(255,255,255,.04);font-size:12.5px;color:var(--mut);font-weight:600;position:sticky}
+.row:not(.h):hover{background:rgba(255,255,255,.04)}
+.row.on{background:rgba(255,211,107,.08)}
+.row.flag .w{color:#fca5a5}
+.row .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .w{font-size:14px;line-height:1.5;color:#dfe4ff;word-break:break-word}
+.row .t{font-size:12.5px;color:var(--mut)}
+.row .a{text-align:right}
+.row .del{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.35);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:600}
+.row .del:hover{background:rgba(239,68,68,.25)}
+.chk{width:20px;height:20px;accent-color:var(--gold)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:middle}
+.tag.bad{background:rgba(239,68,68,.2);color:#fca5a5}
+.empty{padding:50px;text-align:center;color:var(--mut)}
+.more{display:flex;justify-content:center;padding:14px}
+.row.gone{animation:gone .4s forwards}
+@keyframes gone{to{opacity:0;transform:translateX(40px)}}
+/* modal */
+.mdl{position:fixed;inset:0;background:rgba(3,6,20,.65);backdrop-filter:blur(6px);display:none;place-items:center;z-index:50;padding:16px}
+.mdl.show{display:grid}
+.mbox{width:min(420px,100%);background:linear-gradient(160deg,#1f2a6e,#121a48);border:1px solid var(--line);border-radius:22px;padding:24px;text-align:center;animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.mbox .ic{font-size:44px}
+.mbox h3{margin:8px 0 6px}
+.mbox p{color:var(--mut);margin:0 0 20px;font-size:14.5px;line-height:1.6}
+.mbox .bs{display:flex;gap:10px}.mbox .bs .btn{flex:1;justify-content:center}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,100px);background:#1d2a60;border:1px solid var(--gold);padding:11px 20px;border-radius:99px;z-index:60;transition:.3s;font-weight:500}
+.toast.show{transform:translate(-50%,0)}
+@media(max-width:760px){
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .row{grid-template-columns:32px 1fr auto;grid-template-areas:"c n a" "c w w" "c t t";gap:4px 10px}
+ .row>:nth-child(1){grid-area:c;align-self:start;margin-top:2px}.row .n{grid-area:n}.row .w{grid-area:w}.row .t{grid-area:t}.row .a{grid-area:a}
+ .row.h{display:none}
+ header .me{width:100%;margin-left:0;justify-content:space-between}
+}
+</style>
+</head>
+<body>
+
+<section id="login">
+  <form class="lcard" id="lform">
+    <div class="ic">🛡️</div>
+    <h1>ระบบบริหารจัดการ</h1>
+    <p>ลอยกระทงออนไลน์ ๒๕๖๙ · เทศบาลตำบลบ้านบึง<br>สำหรับเจ้าหน้าที่เท่านั้น</p>
+    <label for="em">อีเมล</label><input id="em" type="email" autocomplete="username" required>
+    <label for="pw">รหัสผ่าน</label><input id="pw" type="password" autocomplete="current-password" required>
+    <button class="btn gold" id="lbtn">🔐 เข้าสู่ระบบ</button>
+    <div class="err" id="lerr"></div>
+  </form>
+</section>
+
+<section id="app">
+  <header>
+    <div class="logo">🪷</div>
+    <div><h1>ระบบบริหารจัดการลอยกระทง</h1><small>เทศบาลตำบลบ้านบึง · ๒๕๖๙</small></div>
+    <div class="me"><span id="who"></span><a class="btn ghost" href="./" target="_blank" style="text-decoration:none">🌐 ดูหน้าเว็บ</a><button class="btn ghost" id="out">ออกจากระบบ</button></div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><i>🪷</i><b id="sAll">0</b><small>กระทงทั้งหมด</small></div>
+    <div class="stat"><i>📅</i><b id="sToday">0</b><small>ลอยวันนี้</small></div>
+    <div class="stat"><i>⏱️</i><b id="sHour">0</b><small>ชั่วโมงล่าสุด</small></div>
+    <div class="stat"><i>⚠️</i><b id="sBad">0</b><small>ข้อความไม่สุภาพ</small></div>
+  </div>
+
+  <div class="bar">
+    <input type="checkbox" class="chk" id="all" title="เลือกทั้งหมดที่แสดง">
+    <div class="sb"><input id="q" placeholder="ค้นหาชื่อหรือคำอธิษฐาน"></div>
+    <select id="f"><option value="">ทั้งหมด</option><option value="bad">⚠️ ไม่สุภาพ</option><option value="today">📅 วันนี้</option></select>
+    <span class="sel" id="selN"></span>
+    <button class="btn danger" id="delSel" disabled>🗑️ ลบที่เลือก</button>
+    <button class="btn ghost" id="csv">⬇️ CSV</button>
+  </div>
+
+  <div class="tbl" id="tbl"></div>
+  <div class="more"><button class="btn ghost" id="more" hidden>แสดงเพิ่ม</button></div>
+</section>
+
+<div class="mdl" id="mdl"><div class="mbox"><div class="ic">🗑️</div><h3 id="mT"></h3><p id="mP"></p><div class="bs"><button class="btn ghost" id="mNo">ยกเลิก</button><button class="btn danger" id="mYes">ลบ</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const FIREBASE_CONFIG={apiKey:"AIzaSyDizNlWp_4JWQqgWmIaot9o4qKn21zDaBI",authDomain:"banbueng-loykrathong.firebaseapp.com",databaseURL:"https://banbueng-loykrathong-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"banbueng-loykrathong",storageBucket:"banbueng-loykrathong.firebasestorage.app",messagingSenderId:"755057502893",appId:"1:755057502893:web:2b56be997d7408a85fb424"};
+const DB_PATH="banbueng2569/krathongs";
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth=firebase.auth(),db=firebase.database(),ref=db.ref(DB_PATH),cntRef=db.ref(DB_PATH+"_count");
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=t=>new Date(t).toLocaleString("th-TH",{day:"numeric",month:"short",year:"2-digit",hour:"2-digit",minute:"2-digit"});
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
+const BAD=/(เหี้ย|เหี่ย|ควย|เย็ด|สัส|ไอ้สัตว์|อีสัตว์|อีดอก|ส้นตีน|ระยำ|จัญไร|แม่ง|มึง|เชี่ย|กะหรี่|ชิบหาย|ฉิบหาย|fuck|shit|bitch|cunt|whore|slut|asshole|dick|pussy)/i;
+
+/* ---------- login ---------- */
+$("lform").onsubmit=async e=>{e.preventDefault();$("lerr").textContent="";$("lbtn").disabled=true;
+  try{await auth.signInWithEmailAndPassword($("em").value.trim(),$("pw").value)}
+  catch(x){$("lerr").textContent=({"auth/invalid-credential":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/wrong-password":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/user-not-found":"อีเมลหรือรหัสผ่านไม่ถูกต้อง","auth/too-many-requests":"ลองหลายครั้งเกินไป กรุณารอสักครู่"})[x.code]||("เข้าสู่ระบบไม่สำเร็จ: "+x.code)}
+  finally{$("lbtn").disabled=false}};
+$("out").onclick=()=>auth.signOut();
+
+let data=[],shown=100,sel=new Set(),live=null;
+auth.onAuthStateChanged(async u=>{
+  if(live){ref.off("value",live);live=null}
+  if(!u){$("app").style.display="none";$("login").style.display="grid";return}
+  const ok=await db.ref("admins/"+u.uid).get().then(s=>s.val()===true).catch(()=>false);
+  if(!ok){$("lerr").innerHTML=`บัญชีนี้ไม่มีสิทธิ์ผู้ดูแล<br><small style="color:#9aa6d6">UID: ${u.uid}</small>`;await auth.signOut();return}
+  $("login").style.display="none";$("app").style.display="block";$("who").textContent="👤 "+u.email;
+  live=ref.on("value",s=>{const v=s.val()||{};data=Object.entries(v).map(([id,k])=>({id,...k})).sort((a,b)=>(b.ts||0)-(a.ts||0));sel=new Set([...sel].filter(id=>v[id]));render()},
+    e=>toast("โหลดข้อมูลไม่ได้: "+e.code));
+});
+
+/* ---------- list ---------- */
+function filtered(){const q=$("q").value.trim().toLowerCase(),f=$("f").value,d0=new Date().setHours(0,0,0,0);
+  return data.filter(k=>(!q||String(k.name).toLowerCase().includes(q)||String(k.wish).toLowerCase().includes(q))&&(!f||(f==="bad"?BAD.test(k.name+" "+k.wish):k.ts>=d0)))}
+function render(){const d0=new Date().setHours(0,0,0,0),h1=Date.now()-3600e3;
+  $("sAll").textContent=data.length.toLocaleString("th-TH");$("sToday").textContent=data.filter(k=>k.ts>=d0).length.toLocaleString("th-TH");
+  $("sHour").textContent=data.filter(k=>k.ts>=h1).length.toLocaleString("th-TH");$("sBad").textContent=data.filter(k=>BAD.test(k.name+" "+k.wish)).length.toLocaleString("th-TH");
+  const arr=filtered(),view=arr.slice(0,shown);
+  $("tbl").innerHTML=`<div class="row h"><span></span><span>ชื่อ</span><span>คำอธิษฐาน</span><span>เวลา</span><span class="a">จัดการ</span></div>`+
+   (view.length?view.map(k=>{const bad=BAD.test(k.name+" "+k.wish);return `<div class="row${sel.has(k.id)?" on":""}${bad?" flag":""}" data-id="${k.id}">
+    <input type="checkbox" class="chk" ${sel.has(k.id)?"checked":""}><span class="n">${esc(k.name)}${bad?'<span class="tag bad">ไม่สุภาพ</span>':""}</span>
+    <span class="w">${esc(k.wish)}</span><span class="t">${k.ts?fmt(k.ts):"-"}</span><span class="a"><button class="del">ลบ</button></span></div>`}).join(""):`<div class="empty">ไม่พบข้อมูล</div>`);
+  $("more").hidden=arr.length<=shown;$("all").checked=view.length>0&&view.every(k=>sel.has(k.id));
+  $("selN").textContent=sel.size?`เลือก ${sel.size} รายการ`:"";$("delSel").disabled=!sel.size}
+$("q").oninput=$("f").onchange=()=>{shown=100;render()};
+$("more").onclick=()=>{shown+=100;render()};
+$("all").onchange=e=>{filtered().slice(0,shown).forEach(k=>e.target.checked?sel.add(k.id):sel.delete(k.id));render()};
+$("tbl").onclick=e=>{const r=e.target.closest(".row[data-id]");if(!r)return;const id=r.dataset.id;
+  if(e.target.closest(".del")){const k=data.find(x=>x.id===id);ask(`ลบกระทงของ “${k.name}”?`,`“${k.wish}”<br>ลบแล้วจะหายจากหน้าเว็บทันทีและกู้คืนไม่ได้`,()=>del([id]));return}
+  if(e.target.matches(".chk")||!e.target.closest("button")){sel.has(id)?sel.delete(id):sel.add(id);render()}};
+$("delSel").onclick=()=>ask(`ลบ ${sel.size} รายการ?`,"ข้อมูลที่เลือกจะหายจากหน้าเว็บทันทีและกู้คืนไม่ได้",()=>del([...sel]));
+
+/* ---------- delete ---------- */
+async function del(ids){const rows=ids.map(id=>document.querySelector(`.row[data-id="${id}"]`)).filter(Boolean);rows.forEach(r=>r.classList.add("gone"));
+  try{const up={};ids.forEach(id=>up[id]=null);await ref.update(up);
+    await cntRef.transaction(c=>Math.max(0,(c||0)-ids.length));ids.forEach(id=>sel.delete(id));toast(`🗑️ ลบแล้ว ${ids.length} รายการ`)}
+  catch(x){rows.forEach(r=>r.classList.remove("gone"));toast("ลบไม่สำเร็จ: "+(x.code||x.message))}}
+
+/* ---------- confirm modal ---------- */
+let onYes=null;function ask(t,p,fn){$("mT").textContent=t;$("mP").innerHTML=p;onYes=fn;$("mdl").classList.add("show")}
+$("mNo").onclick=()=>$("mdl").classList.remove("show");$("mdl").onclick=e=>{if(e.target.id==="mdl")$("mdl").classList.remove("show")};
+$("mYes").onclick=()=>{$("mdl").classList.remove("show");onYes&&onYes()};
+addEventListener("keydown",e=>{if(e.key==="Escape")$("mdl").classList.remove("show")});
+
+/* ---------- export ---------- */
+$("csv").onclick=()=>{const rows=[["ชื่อ","คำอธิษฐาน","เวลา"]].concat(filtered().map(k=>[k.name,k.wish,k.ts?new Date(k.ts).toLocaleString("th-TH"):""]));
+  const csv="﻿"+rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="loykrathong-banbueng-2569.csv";a.click()};
+</script>
+</body>
+</html>

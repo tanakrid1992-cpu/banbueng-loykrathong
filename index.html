@@ -465,14 +465,13 @@ main>*{pointer-events:auto}
           <div class="fld"><label for="wish">🙏 คำอธิษฐาน</label><textarea id="wish" maxlength="200" rows="3" placeholder="พิมพ์คำอธิษฐานของคุณ..."></textarea>
             <div class="row"><span>ไม่เกิน 200 ตัวอักษร</span><span id="wc">0/200</span></div>
             <div class="sug" id="sug"><span id="sugT"></span><button type="button" id="sugBtn">✨ ใช้กระทงแนะนำ</button></div></div>
-          <div class="fld"><label>🖼️ รูปภาพบนกระทง <small>(ไม่บังคับ)</small></label><div class="photoRow"><img id="phPrev" hidden alt=""><button type="button" class="photoBtn" id="phBtn">📷 เลือกรูป</button><button type="button" class="photoBtn" id="phDel" hidden>ลบรูป</button><input type="file" id="phFile" accept="image/*" hidden></div></div>
           <div class="err" id="err2"></div>
         </div>
       </div>
       <div class="pane" data-p="3">
         <div class="sum"><div class="sumStage"><div class="sumTag" id="sumTag"></div><div class="sumArt" id="sumArt"></div></div>
           <div class="sumInfo" id="sumInfo"></div></div>
-        <label class="pdpa"><input type="checkbox" id="pdpa"> <span>ยินยอมให้เทศบาลตำบลบ้านบึงเก็บและแสดงชื่อ คำอธิษฐาน และรูปภาพ (ถ้ามี) บนเว็บไซต์นี้ เพื่อกิจกรรมลอยกระทงออนไลน์ ประจำปี 2569 ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</span></label>
+        <label class="pdpa"><input type="checkbox" id="pdpa"> <span>ยินยอมให้เทศบาลตำบลบ้านบึงเก็บและแสดงชื่อและคำอธิษฐาน บนเว็บไซต์นี้ เพื่อกิจกรรมลอยกระทงออนไลน์ ประจำปี 2569 ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</span></label>
         <div class="err" id="err"></div>
       </div>
       <button type="submit" id="submit" hidden></button>
@@ -590,7 +589,7 @@ function buildSVG(p){
 }
 function art0(k){return k.type==="preset"?`<img src="${IMG[k.preset]}" alt="" draggable="false">`:buildSVG(k.parts)}
 const okPhoto=u=>typeof u==="string"&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(u);
-function art(k){return `<div class="art">${art0(k)}${okPhoto(k.photo)?`<img class="ph" src="${k.photo}" alt="">`:""}</div>`}
+function art(k){return `<div class="art">${art0(k)}</div>`}
 
 /* ===== สถานะ ===== */
 const $=id=>document.getElementById(id);
@@ -608,12 +607,7 @@ function sparkle(el){const r=el.getBoundingClientRect();for(let i=0;i<10;i++){co
 function renderPreview(fx){$("pv").innerHTML=art(sel);const lb=sel.type==="preset"?PRESETS.find(p=>p[0]===sel.preset)[1]:groups.map(([g,,arr])=>arr.find(a=>a[0]===sel.parts[g])[1]).filter(n=>n!=="ไม่ประดับ").join(" · ");
   $("pvl").textContent=lb;if(fx){const pv=$("pv");pv.classList.remove("pop");void pv.offsetWidth;pv.classList.add("pop");const r=document.createElement("div");r.className="pvring";pv.parentNode.appendChild(r);setTimeout(()=>r.remove(),800);sparkle(pv)}}
 function refreshThumbs(){document.querySelectorAll("#tCustom .opt").forEach(b=>{b.querySelector(".th").innerHTML=buildSVG({...sel.parts,[b.dataset.g]:b.dataset.v})})}
-$("phBtn").onclick=()=>$("phFile").click();
-$("phDel").onclick=()=>{sel.photo=null;$("phPrev").hidden=$("phDel").hidden=true;$("phFile").value="";renderPreview()};
-$("phFile").onchange=e=>{const f=e.target.files[0];if(!f)return;if(!/^image\//.test(f.type))return toast("กรุณาเลือกไฟล์รูปภาพ");
-  const img=new Image(),u=URL.createObjectURL(f);img.onload=()=>{const c=document.createElement("canvas"),S=200,m=Math.min(img.width,img.height);c.width=c.height=S;
-    c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);sel.photo=c.toDataURL("image/jpeg",.75);URL.revokeObjectURL(u);
-    $("phPrev").src=sel.photo;$("phPrev").hidden=$("phDel").hidden=false;renderPreview();sparkle($("phBtn"))};img.onerror=()=>toast("เปิดรูปไม่ได้");img.src=u};
+
 $("presets").innerHTML=PRESETS.map(([id,n])=>`<button type="button" class="preset${id===sel.preset?" on":""}" data-id="${id}"><img src="${IMG[id]}" alt="">${n}</button>`).join("");
 $("presets").onclick=e=>{const b=e.target.closest(".preset");if(!b)return;sel.type="preset";sel.preset=b.dataset.id;document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("on",x===b));sparkle(b);renderPreview(true)};
 const groups=[["base","🍃 ฐานกระทง",BASES],["flower","🌺 ดอกไม้",FLOWERS],["candle","🕯️ ธูปเทียน",CANDLES],["deco","💎 ของประดับ",DECOS]];
@@ -641,7 +635,7 @@ function syncRiver(){
   const want=onRiver(),ids=new Set(want.map(k=>k.id));
   nodes.forEach((n,id)=>{if(!ids.has(id)){n.el.remove();nodes.delete(id)}});
   want.forEach(k=>{if(nodes.has(k.id))return;const h=hash(k.id),el=document.createElement("div");
-    el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag">${okPhoto(k.photo)?`<img class="tph" src="${k.photo}" alt="">`:""}<b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art0(k)}</div>`;
+    el.className="k"+(mine.has(k.id)?" mine":"");el.innerHTML=`<div class="tag"><b>${mine.has(k.id)?"⭐ ":""}${esc(k.name)}</b><span>${esc(k.wish)}</span></div><div class="body">${art0(k)}</div>`;
     el.onclick=()=>openK(k);world.appendChild(el);
     nodes.set(k.id,{el,k,b:el.querySelector(".body"),lane:(h%997)/997,off:((h>>>11)%1009)/1009,ph:(h%628)/100,x:0,y:0,sz:0});});
   countUp(Math.max(fbCount,all.length));stats();{const n=Math.max(fbCount,all.length);$("badge").textContent=n>99?"99+":n}
@@ -722,7 +716,8 @@ async function initData(){
     const ld=u=>new Promise((r,j)=>{const s=document.createElement("script");s.src=u;s.onload=r;s.onerror=j;document.head.appendChild(s)});
     await ld("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");await ld("https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js");
     firebase.initializeApp(FIREBASE_CONFIG);fb=firebase.database().ref(DB_PATH);
-    fb.limitToLast(MAX_ON_RIVER).on("child_added",s=>addLocal({...s.val(),id:s.key}));
+    const q=fb.limitToLast(MAX_ON_RIVER);q.on("child_added",s=>addLocal({...s.val(),id:s.key}));
+    q.on("child_removed",s=>{all=all.filter(k=>k.id!==s.key);refresh()});
     firebase.database().ref(DB_PATH+"_count").on("value",s=>{fbCount=Number(s.val())||0;countUp(Math.max(fbCount,all.length));stats()});
     return}catch(e){console.warn("Firebase unavailable, using local mode",e)}}
   all=ls.get("bb69_all",[]).map(cleanK);
@@ -734,11 +729,11 @@ $("form").onsubmit=async e=>{e.preventDefault();const name=$("name").value.trim(
   if(!name)return er.textContent="กรุณาใส่ชื่อ";if(!wish)return er.textContent="กรุณาใส่คำอธิษฐาน";
   if(BAD.test(name+" "+wish))return er.textContent=badMsg(name+" "+wish);if(!$("pdpa").checked)return er.textContent="กรุณาติ๊กยินยอมตาม PDPA";
   er.textContent="";$("submit").disabled=$("nextBtn").disabled=true;
-  ls.set("bb69_name",name);const k={name,wish,type:sel.type,ts:Date.now()};if(sel.type==="preset")k.preset=sel.preset;else k.parts={...sel.parts};if(sel.photo)k.photo=sel.photo;
-  try{if(fb){const r=fb.push();k.id=r.key;mine.add(k.id);ls.set("bb69_mine",[...mine]);await r.set({name,wish,type:k.type,ts:k.ts,...(k.preset?{preset:k.preset}:{parts:k.parts}),...(k.photo?{photo:k.photo}:{})});firebase.database().ref(DB_PATH+"_count").transaction(c=>(c||0)+1)}
+  ls.set("bb69_name",name);const k={name,wish,type:sel.type,ts:Date.now()};if(sel.type==="preset")k.preset=sel.preset;else k.parts={...sel.parts};
+  try{if(fb){const r=fb.push();k.id=r.key;mine.add(k.id);ls.set("bb69_mine",[...mine]);await r.set({name,wish,type:k.type,ts:k.ts,...(k.preset?{preset:k.preset}:{parts:k.parts})});firebase.database().ref(DB_PATH+"_count").transaction(c=>(c||0)+1)}
     else{k.id="u"+k.ts.toString(36)+Math.random().toString(36).slice(2,6);mine.add(k.id);ls.set("bb69_mine",[...mine]);addLocal(k);ls.set("bb69_all",all.slice(-120))}
     if(fb)addLocal(k);
-    $("wish").value="";$("wc").textContent="0/200";$("pdpa").checked=false;setTimeout(()=>go(1),600);$("phDel").click();toast("🪷 ลอยกระทงเรียบร้อย ขอให้สมปรารถนา");
+    $("wish").value="";$("wc").textContent="0/200";$("pdpa").checked=false;setTimeout(()=>go(1),600);toast("🪷 ลอยกระทงเรียบร้อย ขอให้สมปรารถนา");
     for(let i=0;i<4;i++)setTimeout(randomShow,i*350);for(let i=0;i<4;i++)setTimeout(lantern,i*400);
     closeD();setTimeout(()=>$("findBtn").click(),500);sfx("splash");setTimeout(()=>openK(k,true),3200);
   }catch(x){er.textContent="บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง"}finally{$("submit").disabled=$("nextBtn").disabled=false}};
@@ -748,7 +743,7 @@ $("form").onsubmit=async e=>{e.preventDefault();const name=$("name").value.trim(
 /* ===== ขั้นตอนลอยกระทง ===== */
 let step=1;
 function summary(){const name=$("name").value.trim(),wish=$("wish").value.trim(),c=classify(wish);
-  $("sumArt").innerHTML=art0(sel);$("sumTag").innerHTML=`${sel.photo?`<img src="${sel.photo}" alt="">`:""}<b>⭐ ${esc(name)}</b>${esc(wish)}`;
+  $("sumArt").innerHTML=art0(sel);$("sumTag").innerHTML=`<b>⭐ ${esc(name)}</b>${esc(wish)}`;
   const kname=sel.type==="preset"?PRESETS.find(p=>p[0]===sel.preset)[1]:$("pvl").textContent;
   $("sumInfo").innerHTML=`<div class="sumRow"><button type="button" data-go="1">แก้ไข</button><small>🪷 กระทง</small>${esc(kname)}</div>
    <div class="sumRow"><button type="button" data-go="2">แก้ไข</button><small>🔮 ผู้ช่วยอัจฉริยะวิเคราะห์</small>${c.ic} ${c.n}</div>`}
