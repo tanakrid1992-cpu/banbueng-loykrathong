@@ -437,6 +437,10 @@ main>*{pointer-events:auto}
 .k .tag.dim{opacity:.22}
 .k:hover .tag.dim{opacity:1}
 .k .tag::after{height:.9em!important}
+.dock .dk[hidden]{display:none!important}
+.dock{padding:6px!important}
+.dkMain{flex:none!important;padding:14px 40px!important;font-size:17px!important;flex-direction:row!important;gap:10px!important}
+@media(max-width:640px){.dock{left:50%!important;right:auto!important;transform:translateX(-50%)!important;width:auto!important}.dkMain{padding:13px 44px!important}.dkMain i{font-size:22px!important}}
 </style>
 </head>
 <body>
@@ -455,9 +459,9 @@ main>*{pointer-events:auto}
   <div class="ctrl"><button class="musBtn" id="mus" title="เปิด/ปิดเพลง" aria-label="เพลง">🎵</button><button class="sndBtn" id="snd" title="เปิด/ปิดเสียงเอฟเฟกต์" aria-label="เสียงเอฟเฟกต์">🔇</button></div><div class="musHint" id="musHint" hidden>🎵 แตะที่ใดก็ได้เพื่อเปิดเพลง</div>
   <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
   <nav class="dock" aria-label="เมนูหลัก">
-    <button class="dk" id="findBtn" disabled><i>🔍</i><span>กระทงของฉัน</span></button>
+    <button class="dk" id="findBtn" disabled hidden><i>🔍</i><span>กระทงของฉัน</span></button>
     <button class="dk dkMain shine" id="goBtn"><i>🪷</i><span>ลอยกระทง</span></button>
-    <button class="dk" data-open="wishes"><i>📜</i><span>คำอธิษฐาน</span><b class="badge" id="badge">0</b></button>
+    <button class="dk" data-open="wishes" hidden><i>📜</i><span>คำอธิษฐาน</span><b class="badge" id="badge">0</b></button>
   </nav>
 </section>
 
