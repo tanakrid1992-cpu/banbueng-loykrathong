@@ -69,7 +69,7 @@ button{font-family:inherit;cursor:pointer}
 .k .tag{position:absolute;left:50%;bottom:98%;transform:translateX(-50%);max-width:14em;width:max-content;text-align:center;font-size:1em;line-height:1.35;padding:.5em .9em .55em;border-radius:1em;color:#f4f1ff;background:linear-gradient(160deg,rgba(28,36,82,.62),rgba(14,20,52,.5));border:1px solid rgba(255,236,190,.35);box-shadow:0 6px 22px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.15);backdrop-filter:blur(6px) saturate(1.3);-webkit-backdrop-filter:blur(6px) saturate(1.3);pointer-events:none}
 .k .tag b{display:block;font-size:1.05em;word-break:break-word;color:#ffe2a0;font-weight:700;letter-spacing:.2px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .k .tag .tph{display:block;width:3.4em;height:3.4em;margin:0 auto .3em;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 3px rgba(255,226,160,.35),0 4px 12px rgba(0,0,0,.4)}
-.k .tag span{display:block;white-space:normal;word-break:break-word;font-size:.9em;color:#e9e6ff;opacity:.95;margin-top:.15em}
+.k .tag span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;word-break:break-word;font-size:.9em;color:#e9e6ff;opacity:.95;margin-top:.15em}
 .k .tag{transform:translate(-50%,calc(var(--dy,0px)*-1))}
 .k .tag::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:calc(.9em + var(--dy,0px));transform:translateX(-50%);background:linear-gradient(rgba(255,236,190,.6),transparent)}
 .k:hover{z-index:2000!important}
@@ -432,6 +432,10 @@ main>*{pointer-events:auto}
 @media(min-width:641px){.title{max-width:none!important}.title h1{white-space:nowrap}}
 .org{padding:4px 12px!important}
 @media(max-width:640px){.title{gap:10px}.title .logo{width:56px;margin-top:2px}}
+.k .tag{transition:opacity .45s ease,transform .45s ease}
+.k .tag.hid{opacity:0;transform:translate(-50%,6px) scale(.92)!important}
+.k:hover .tag.hid{opacity:1;transform:translateX(-50%)!important}
+.k .tag::after{height:.9em!important}
 </style>
 </head>
 <body>
@@ -643,7 +647,7 @@ function resize(){W=river.clientWidth;H=river.clientHeight;world.style.width=W+"
   if(P.focus){ox=W/2-P.focus[0]*s;oy=H*P.focus[2]-P.focus[1]*s;ox=Math.min(0,Math.max(W-P.w*s,ox));oy=Math.min(0,Math.max(H-P.h*s,oy))}else{ox=(W-P.w*s)*.5;oy=(H-P.h*s)*.45}
   M={s,ox,oy};const bgEl=document.querySelector(".bg");bgEl.style.backgroundSize=`${P.w*s}px ${P.h*s}px`;bgEl.style.backgroundPosition=`${ox}px ${oy}px`;placeBears();sizeCanvas($("sky"));sizeCanvas($("fx"))}
 function hash(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1540483477);h^=h>>>15;return h>>>0}
-function onRiver(){const list=all.slice(-MAX_ON_RIVER);all.forEach(k=>{if(mine.has(k.id)&&!list.includes(k))list.push(k)});return list}
+function onRiver(){const list=all.slice(-(innerWidth<700?18:36));all.forEach(k=>{if(mine.has(k.id)&&!list.includes(k))list.push(k)});return list}
 function syncRiver(){
   const want=onRiver(),ids=new Set(want.map(k=>k.id));
   nodes.forEach((n,id)=>{if(!ids.has(id)){n.el.remove();nodes.delete(id)}});
@@ -655,12 +659,14 @@ function syncRiver(){
   $("findBtn").disabled=![...nodes.keys()].some(id=>mine.has(id));$("findBtn").classList.toggle("has",!$("findBtn").disabled);
 }
 // จัดป้ายไม่ให้ทับกัน: ป้ายของกระทงที่อยู่ไกลกว่าจะถูกยกขึ้นเหนือป้ายที่อยู่ใกล้ (ขยับนุ่มๆ)
-function layoutTags(){const arr=[...nodes.values()].sort((a,b)=>b.y-a.y),placed=[];
-  arr.forEach(n=>{const tg=n.tg||(n.tg=n.el.querySelector(".tag"));if(!tg)return;if(!n.tw){n.tw=tg.offsetWidth;n.th=tg.offsetHeight;if(!n.tw)return}
-    const cx=n.x+n.sz/2,L=cx-n.tw/2-4,R=cx+n.tw/2+4,B0=n.y+n.sz*.02;let dy=0,moved=true,guard=0;
-    while(moved&&guard++<20){moved=false;for(const p of placed){const B=B0-dy,T=B-n.th;if(R>p.L&&L<p.R&&B>p.T-4&&T<p.B){dy=B0-(p.T-6);moved=true}}}
-    n.dy=(n.dy||0)+(dy-(n.dy||0))*.18;if(Math.abs(n.dy-dy)<.5)n.dy=dy;tg.style.setProperty("--dy",n.dy.toFixed(1)+"px");
-    placed.push({L,R,T:B0-n.dy-n.th,B:B0-n.dy})})}
+// ป้ายคำอธิษฐานไม่บังวิว: แสดงเฉพาะป้ายที่ไม่ชนกัน (ใบหน้าก่อน, ของเราก่อนเสมอ) จำกัดจำนวนตามขนาดจอ ที่เหลือซ่อนไว้ แตะกระทงเพื่ออ่าน
+function layoutTags(){const cap=innerWidth<700?3:innerWidth<1100?5:7,placed=[],hzTop=H*.3;
+  const arr=[...nodes.values()].sort((a,b)=>(mine.has(b.k.id)-mine.has(a.k.id))||(b.y-a.y));let n=0;
+  arr.forEach(nd=>{const tg=nd.tg||(nd.tg=nd.el.querySelector(".tag"));if(!tg)return;if(!nd.tw){nd.tw=tg.offsetWidth;nd.th=tg.offsetHeight}
+    const cx=nd.x+nd.sz/2,r={L:cx-nd.tw/2-6,R:cx+nd.tw/2+6,B:nd.y+nd.sz*.02,T:nd.y+nd.sz*.02-nd.th-6};
+    const inView=r.L>=-4&&r.R<=W+4&&r.T>hzTop-nd.th*.5,hit=placed.some(p=>r.R>p.L&&r.L<p.R&&r.B>p.T&&r.T<p.B);
+    const show=nd.tw&&inView&&!hit&&(n<cap||mine.has(nd.k.id));
+    if(show){placed.push(r);n++}if(nd.vis!==show){nd.vis=show;tg.classList.toggle("hid",!show)}})}
 addEventListener("resize",()=>nodes.forEach(n=>n.tw=0));
 function tick(t){
   // ลอยผ่านหน้าแพ ไม่วน
